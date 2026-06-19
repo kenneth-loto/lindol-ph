@@ -108,6 +108,7 @@ jobs:
     timeout-minutes: 10
     needs: [lint, typecheck] # test
     env:
+      USGS_URL: ${{ secrets.USGS_URL }}
       NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
     steps:
       - name: Checkout

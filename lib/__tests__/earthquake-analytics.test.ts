@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { USGSFeature } from "@/types/earthquakes";
 import {
   extractRegion,
-  filterPhilippineQuakes,
+  filterPhilippineEarthquakes,
   getMagnitudeBuckets,
   getMetrics,
   groupByRegion,
@@ -12,6 +11,7 @@ import {
   calculateSeismicEnergy,
   formatScientific,
 } from "../energy-calculation";
+import type { USGSFeature } from "../schema/usgs-feature";
 
 // Mock data matching the actual USGSFeature contract.
 // Note: no `depth` field on `properties` — depth only lives in
@@ -66,7 +66,7 @@ const mockFeatures: USGSFeature[] = [
 
 describe("Earthquake Analytics Suite", () => {
   test("filterPhilippineQuakes excludes non-PH locations", () => {
-    const filtered = filterPhilippineQuakes(mockFeatures);
+    const filtered = filterPhilippineEarthquakes(mockFeatures);
     // Davao (2) + Calapan (1) + Mindanao (1) = 4. Tokyo excluded.
     expect(filtered.length).toBe(4);
     expect(filtered.some((quake) => quake.id === "us7000mock5")).toBe(false);
@@ -87,7 +87,7 @@ describe("Earthquake Analytics Suite", () => {
   });
 
   test("groupByRegion aggregates and sorts by energy descending", () => {
-    const phQuakes = filterPhilippineQuakes(mockFeatures);
+    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
     const groups = groupByRegion(phQuakes);
 
     expect(groups.length).toBe(3); // Davao City, Calapan, Mindanao
@@ -109,7 +109,7 @@ describe("Earthquake Analytics Suite", () => {
   });
 
   test("getMagnitudeBuckets distributes magnitudes correctly, skipping nulls", () => {
-    const phQuakes = filterPhilippineQuakes(mockFeatures);
+    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
     const buckets = getMagnitudeBuckets(phQuakes);
 
     // 2.8 -> minor, 4.5 -> light, 5.1 -> strong, null -> skipped
@@ -117,7 +117,7 @@ describe("Earthquake Analytics Suite", () => {
   });
 
   test("getMetrics generates accurate high-level summary KPIs", () => {
-    const phQuakes = filterPhilippineQuakes(mockFeatures);
+    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
     const groups = groupByRegion(phQuakes);
     const metrics = getMetrics(phQuakes, groups);
 
