@@ -52,41 +52,41 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ---
 
-## Server Data Fetch — `app/services/quakes.ts`
+## Server Data Fetch — `app/dal/earthquakes.ts`
 
-- [ ] `getWeeklyQuakes()` fetches USGS GeoJSON endpoint server-side
-- [ ] `revalidate: 3600` set on fetch for 1-hour ISR cache
+- [x] `getWeeklyQuakes()` fetches USGS GeoJSON endpoint server-side
+- [x] `revalidate: 3600` set on fetch for 1-hour ISR cache
 - [ ] Error handling in place for failed fetch
-- [ ] Returns typed `USGSFeature[]`
+- [x] Returns typed `USGSFeature[]`
 
 ---
 
 ## Data Pipeline — `app/page.tsx`
 
-- [ ] Page is a server component (no `"use client"`)
-- [ ] Calls `getWeeklyQuakes()`, runs PH filter, runs all utilities
-- [ ] All computed values passed as typed props to child components
-- [ ] Real data confirmed flowing correctly in terminal logs
+- [x] Page is a server component (no `"use client"`)
+- [x] Calls `getWeeklyQuakes()`, runs PH filter, runs all utilities
+- [x] All computed values passed as typed props to child components
+- [x] Real data confirmed flowing correctly in terminal logs
 
 ---
 
 ## Feature: MetricStrips
 
-- [ ] 3 cards in a responsive row (stacks on mobile)
-- [ ] Card 1: Total PH Incidents — large number, label below
-- [ ] Card 2: Peak Magnitude — value + location subtext
-- [ ] Card 3: Highest Energy Region — name + formatted energy value
-- [ ] Wired to real data from `page.tsx`
+- [x] 3 cards in a responsive row (stacks on mobile)
+- [x] Card 1: Total PH Incidents — large number, label below
+- [x] Card 2: Peak Magnitude — value + location subtext
+- [x] Card 3: Highest Energy Region — name + formatted energy value
+- [x] Wired to real data from `page.tsx`
 
 ---
 
 ## Feature: Energy Release Table
 
-- [ ] Table columns: Rank | Region | Quakes | Avg Mag | Avg Depth | Est. Energy (J)
-- [ ] Rows sorted by total energy descending
-- [ ] Energy values rendered in scientific notation format
-- [ ] Footnote or tooltip citing the Gutenberg-Richter formula
-- [ ] Wired to real data from `page.tsx`
+- [x] Table columns: Rank | Region | Quakes | Avg Mag | Avg Depth | Est. Energy (J)
+- [x] Rows sorted by total energy descending
+- [x] Energy values rendered in scientific notation format
+- [x] Footnote or tooltip citing the Gutenberg-Richter formula
+- [x] Wired to real data from `page.tsx`
 
 ---
 
