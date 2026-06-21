@@ -1,19 +1,20 @@
 import { Suspense } from "react";
+import { getCachedWeeklyPhilippineQuakes } from "@/app/dal/earthquake";
 import { EnergyTable } from "@/components/energy-table";
 import { MetricStrips } from "@/components/metric-strips";
+import { RegionalCharts } from "@/components/regional-charts";
 import {
   filterPhilippineEarthquakes,
-  // getMagnitudeBuckets,
+  getMagnitudeBuckets,
   getMetrics,
   groupByRegion,
 } from "@/lib/earthquake-analytics";
-import { getCachedWeeklyPhilippineQuakes } from "../dal/earthquake";
 
 export default async function Home() {
   const allQuakes = await getCachedWeeklyPhilippineQuakes();
   const phQuakes = filterPhilippineEarthquakes(allQuakes);
   const regionGroups = groupByRegion(phQuakes);
-  // const buckets = getMagnitudeBuckets(phQuakes);
+  const buckets = getMagnitudeBuckets(phQuakes);
   const metrics = getMetrics(phQuakes, regionGroups);
 
   return (
@@ -26,6 +27,11 @@ export default async function Home() {
       </div>
 
       <MetricStrips metrics={metrics} />
+
+      {/* TODO: create a data table skeleton*/}
+      <Suspense fallback={<div>Loading...</div>}>
+        <RegionalCharts regionGroups={regionGroups} buckets={buckets} />
+      </Suspense>
 
       {/* TODO: create a data table skeleton*/}
       <Suspense fallback={<div>Loading...</div>}>
