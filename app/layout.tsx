@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { RscBoundaryProvider } from "@rsc-boundary/next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
@@ -38,9 +40,19 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
       )}
+      suppressHydrationWarning
     >
       <body className="mx-auto flex min-h-full max-w-7xl flex-col px-6 py-12">
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <NuqsAdapter>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <RscBoundaryProvider>{children}</RscBoundaryProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

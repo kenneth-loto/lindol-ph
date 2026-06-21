@@ -19,3 +19,10 @@ export interface MagnitudeBuckets {
   light: number;
   strong: number;
 }
+
+export interface IncidentFeedItem {
+  id: string;
+  mag: number | null;
+  location: string;
+  time: number;
+}

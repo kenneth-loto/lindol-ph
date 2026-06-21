@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getCachedWeeklyPhilippineQuakes } from "@/app/dal/earthquake";
 import { EnergyTable } from "@/components/energy-table";
+import { IncidentFeedTable } from "@/components/incident-feed-table";
 import { MetricStrips } from "@/components/metric-strips";
 import { RegionalCharts } from "@/components/regional-charts";
 import {
@@ -8,6 +9,7 @@ import {
   getMagnitudeBuckets,
   getMetrics,
   groupByRegion,
+  toIncidentFeedItems,
 } from "@/lib/earthquake-analytics";
 
 export default async function Home() {
@@ -16,6 +18,7 @@ export default async function Home() {
   const regionGroups = groupByRegion(phQuakes);
   const buckets = getMagnitudeBuckets(phQuakes);
   const metrics = getMetrics(phQuakes, regionGroups);
+  const incidentFeedItems = toIncidentFeedItems(phQuakes);
 
   return (
     <>
@@ -36,6 +39,11 @@ export default async function Home() {
       {/* TODO: create a data table skeleton*/}
       <Suspense fallback={<div>Loading...</div>}>
         <EnergyTable regionGroups={regionGroups} />
+      </Suspense>
+
+      {/* TODO: create a data table skeleton*/}
+      <Suspense fallback={<div>Loading...</div>}>
+        <IncidentFeedTable items={incidentFeedItems} />
       </Suspense>
     </>
   );
