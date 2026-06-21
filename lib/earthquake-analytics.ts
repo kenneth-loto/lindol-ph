@@ -1,5 +1,6 @@
 import type {
   EarthquakeMetrics,
+  IncidentFeedItem,
   MagnitudeBuckets,
   RegionGroup,
 } from "@/types/earthquakes";
@@ -159,4 +160,17 @@ export function getMetrics(
     topRegion: top?.name ?? "N/A",
     topRegionEnergy: top?.totalEnergy ?? 0,
   };
+}
+
+export function toIncidentFeedItems(
+  earthquakes: USGSFeature[],
+): IncidentFeedItem[] {
+  return earthquakes
+    .map((earthquake) => ({
+      id: earthquake.id,
+      mag: earthquake.properties.mag,
+      location: stripPrefix(earthquake.properties.place),
+      time: earthquake.properties.time,
+    }))
+    .sort((a, b) => b.time - a.time);
 }

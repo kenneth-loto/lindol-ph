@@ -18,7 +18,7 @@ export function EnergyTable({ regionGroups }: EnergyTableProps) {
         </p>
       </div>
 
-      <DataTable columns={regionColumns} data={regionGroups} />
+      <DataTable id="et" columns={regionColumns} data={regionGroups} />
 
       <p className="mt-4 text-center text-muted-foreground text-xs italic">
         Formula: E = 10^(1.5M + 4.8) joules · Gutenberg &amp; Richter (1956).

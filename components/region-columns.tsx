@@ -35,11 +35,6 @@ export const regionColumns: ColumnDef<RegionGroup>[] = [
   {
     id: "rowNumber",
     header: () => <span className="text-muted-foreground text-xs">#</span>,
-    cell: ({ row, table }) =>
-      table.getState().pagination.pageIndex *
-        table.getState().pagination.pageSize +
-      row.index +
-      1,
     enableSorting: false,
     enableHiding: false,
     meta: { enableGlobalFilter: false },
@@ -50,6 +45,7 @@ export const regionColumns: ColumnDef<RegionGroup>[] = [
     cell: ({ row }) => (
       <span className="font-medium">{row.getValue("name")}</span>
     ),
+    enableHiding: false,
   },
   {
     accessorKey: "count",
@@ -57,6 +53,7 @@ export const regionColumns: ColumnDef<RegionGroup>[] = [
       <ColumnHeader column={column} title="Earthquakes" />
     ),
     cell: ({ row }) => <div className="text-sm">{row.getValue("count")}</div>,
+    enableHiding: false,
   },
   {
     accessorKey: "avgMag",
@@ -66,6 +63,7 @@ export const regionColumns: ColumnDef<RegionGroup>[] = [
         {(row.getValue("avgMag") as number).toFixed(2)}
       </div>
     ),
+    enableHiding: false,
   },
   {
     accessorKey: "avgDepth",
@@ -75,6 +73,7 @@ export const regionColumns: ColumnDef<RegionGroup>[] = [
         {(row.getValue("avgDepth") as number).toFixed(1)} km
       </div>
     ),
+    enableHiding: false,
   },
   {
     accessorKey: "totalEnergy",
