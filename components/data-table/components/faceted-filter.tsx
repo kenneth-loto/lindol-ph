@@ -79,7 +79,7 @@ export function FacetedFilter<TData, TValue>({
           </Button>
         }
       />
-      <PopoverContent className="w-200 p-0" align="start">
+      <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
@@ -127,21 +127,21 @@ export function FacetedFilter<TData, TValue>({
                 );
               })}
             </CommandGroup>
-          </CommandList>
 
-          {selectedValues.size > 0 && (
-            <>
-              <CommandSeparator />
-              <CommandGroup>
-                <CommandItem
-                  onSelect={() => column?.setFilterValue(undefined)}
-                  className="justify-center text-center"
-                >
-                  Clear filters
-                </CommandItem>
-              </CommandGroup>
-            </>
-          )}
+            {selectedValues.size > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => column?.setFilterValue(undefined)}
+                    className="justify-center text-center [&>svg:last-child]:hidden"
+                  >
+                    Clear filters
+                  </CommandItem>
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

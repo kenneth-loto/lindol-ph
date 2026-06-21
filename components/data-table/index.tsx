@@ -27,6 +27,7 @@ import { applyUpdater, tableSearchParams } from "@/lib/data-table-parsers";
 import type { FilterConfig } from "@/types/data-table";
 
 interface DataTableProps<TData, TValue> {
+  id?: string; // for same page table state persistence
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchPlaceholder?: string;
@@ -35,7 +36,9 @@ interface DataTableProps<TData, TValue> {
   shallow?: boolean;
 }
 
+//TODO: fix the rerender issue when using react compiler, but not possible in v8 so wait for v9
 export function DataTable<TData, TValue>({
+  id,
   columns,
   data,
   searchPlaceholder,
@@ -48,7 +51,17 @@ export function DataTable<TData, TValue>({
   const [
     { q, page, per_page, sort, filters: columnFilters, cols },
     setTableState,
-  ] = useQueryStates(tableSearchParams, { shallow });
+  ] = useQueryStates(tableSearchParams, {
+    shallow,
+    urlKeys: {
+      q: `${id}_q`,
+      page: `${id}_page`,
+      per_page: `${id}_per_page`,
+      sort: `${id}_sort`,
+      filters: `${id}_filters`,
+      cols: `${id}_cols`,
+    },
+  });
 
   const table = useReactTable({
     data,
@@ -132,11 +145,16 @@ export function DataTable<TData, TValue>({
       );
     }
 
-    return table.getRowModel().rows.map((row) => (
+    return table.getRowModel().rows.map((row, index) => (
       <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
         {row.getVisibleCells().map((cell) => (
           <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {cell.column.id === "rowNumber"
+              ? table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                index +
+                1
+              : flexRender(cell.column.columnDef.cell, cell.getContext())}
           </TableCell>
         ))}
       </TableRow>
