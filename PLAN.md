@@ -92,12 +92,12 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ## Feature: Regional Charts
 
-- [ ] `"use client"` declared (Recharts requirement)
-- [ ] Horizontal `BarChart` — Top 5 regions by quake count, hover tooltip
-- [ ] `PieChart` donut — severity breakdown, hover tooltip, legend
-- [ ] Both charts wrapped in `ResponsiveContainer`
-- [ ] Monochrome / muted color palette consistent with dashboard theme
-- [ ] Wired to real data from `page.tsx`
+- [x] `"use client"` declared (Recharts requirement)
+- [x] Horizontal `BarChart` — Top 5 regions by quake count, hover tooltip
+- [x] `PieChart` donut — severity breakdown, hover tooltip, legend
+- [x] Both charts wrapped in `ResponsiveContainer`
+- [x] Color palette consistent with dashboard theme
+- [x] Wired to real data from `page.tsx`
 
 ---
 

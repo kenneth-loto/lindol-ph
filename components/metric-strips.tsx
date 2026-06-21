@@ -40,7 +40,7 @@ function MetricCard({ label, value, sub }: CardProps) {
   return (
     //TODO: improve ui
     <Card className="rounded-md border">
-      <CardContent className="px-6 pt-6 pb-5">
+      <CardContent className="p-6">
         <p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-widest">
           {label}
         </p>
