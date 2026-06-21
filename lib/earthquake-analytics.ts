@@ -29,6 +29,7 @@ export function stripPrefix(place: string): string {
 export function extractRegion(place: string): string {
   const cleaned = stripPrefix(place);
   const parts = cleaned.split(",");
+
   if (parts.length >= 2) {
     return parts[parts.length - 2].trim();
   }
@@ -66,7 +67,7 @@ export function groupByRegion(earthquakes: USGSFeature[]): RegionGroup[] {
 
   for (const earthquake of earthquakes) {
     const region = extractRegion(earthquake.properties.place);
-    const mag = earthquake.properties.mag; // number | null
+    const mag = earthquake.properties.mag;
     const depth = earthquake.geometry.coordinates[2];
 
     const entry = getOrCreateRegionEntry(map, region);
@@ -108,6 +109,7 @@ export function getMagnitudeBuckets(quakes: USGSFeature[]): MagnitudeBuckets {
 
   for (const quake of quakes) {
     const mag = quake.properties.mag;
+
     if (mag === null) continue;
 
     if (mag < 3.0) minor++;

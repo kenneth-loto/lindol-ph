@@ -12,6 +12,7 @@ import {
 async function fetchWeeklyPhilippinesEarthuakes(): Promise<USGSFeature[]> {
   const res = await fetch(serverEnv.USGS_URL, { cache: "no-store" });
 
+  // TODO: improve error handling isntead of just throwing
   if (!res.ok) {
     throw new Error(`USGS fetch failed: ${res.status} ${res.statusText}`);
   }
