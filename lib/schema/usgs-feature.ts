@@ -13,6 +13,9 @@ export const USGSFeatureSchema = v.object({
 });
 
 export const USGSResponseSchema = v.object({
+  metadata: v.object({
+    generated: v.number(),
+  }),
   features: v.array(USGSFeatureSchema),
 });
 

@@ -56,7 +56,7 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 - [x] `getWeeklyQuakes()` fetches USGS GeoJSON endpoint server-side
 - [x] `revalidate: 3600` set on fetch for 1-hour ISR cache
-- [ ] Error handling in place for failed fetch
+- [x] Error handling in place for failed fetch
 - [x] Returns typed `USGSFeature[]`
 
 ---
@@ -103,15 +103,14 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ## Feature: Incident Feed
 
-- [ ] `"use client"` declared
-- [ ] Text search input filters list by location string in real time
-- [ ] Magnitude dropdown filters: All / 3.0+ / 5.0+
-- [ ] Both filters work simultaneously via derived state
-- [ ] Each row: magnitude badge | clean location | humanized timestamp
-- [ ] List sorted by time descending (most recent first)
-- [ ] Empty state shown when no results match filters
-- [ ] List has max height and scrolls independently
-- [ ] Wired to real data from `page.tsx`
+- [x] `"use client"` declared
+- [x] Text search input filters list in real time
+- [x] Magnitude dropdown filters: < 3.0 / 3.0 - 4.9 / 5.0+
+- [x] Both filters work simultaneously via derived state
+- [x] Each row: magnitude badge | clean location | formatted timestamp
+- [x] List sorted by time descending (most recent first)
+- [x] Empty state shown when no results match filters
+- [x] Wired to real data from `page.tsx`
 
 ---
 
@@ -124,33 +123,43 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ---
 
-## Docker
+## Monitoring — Sentry (Post-MVP)
 
-- [ ] `output: 'standalone'` added to `next.config.ts`
-- [ ] Multi-stage `Dockerfile` written (builder → runner)
-- [ ] `.dockerignore` created
-- [ ] `docker-compose.yml` created for local dev
-- [ ] App builds successfully: `docker-compose up --build`
-- [ ] App confirmed working at `localhost:3000` inside container
-- [ ] Image size checked and acceptable
+- [ ] `@sentry/nextjs` installed and configured via `npx @sentry/wizard@latest -i nextjs`
+- [ ] `SENTRY_AUTH_TOKEN` set as a masked env var in Render dashboard
+- [ ] `SENTRY_AUTH_TOKEN` passed as a build arg in Dockerfile (for source map upload during `bun run build`)
+- [ ] DAL error paths updated — `console.error` replaced with `Sentry.captureMessage` / `Sentry.captureException`
+- [ ] Source maps confirmed uploading and stack traces readable in Sentry dashboard
+- [ ] Alert rules configured (email / Slack / Discord) for USGS fetch failures and Valibot validation errors
 
 ---
 
-## AWS EC2 Deployment
+## Docker
 
-- [ ] EC2 t2.micro launched (Amazon Linux 2, free tier)
-- [ ] Security Group: port 22 (SSH) and port 80 (HTTP) open
-- [ ] SSH access confirmed
-- [ ] Docker installed on instance
-- [ ] Project built and running on instance: `docker run -d -p 80:3000 lindolph`
-- [ ] App accessible at public EC2 IP via browser
-- [ ] Not relying on localhost — confirmed from a different device or network
+- [x] `output: 'standalone'` added to `next.config.ts`
+- [x] Multi-stage `Dockerfile` written (builder → runner)
+- [x] `.dockerignore` created
+- [x] `docker-compose.yml` created for local dev
+- [x] App builds successfully: `docker-compose up --build`
+- [x] App confirmed working at `localhost:3000` inside container
+- [x] Image size checked and acceptable
+
+---
+
+## Render Deployment (Web Service — Docker)
+
+- [ ] GitHub repo connected to Render as a new Web Service (Docker runtime)
+- [ ] `USGS_URL` set as a masked environment variable in Render dashboard
+- [ ] Build Command set to: `echo "$USGS_URL" > /tmp/usgs_url && docker build --secret id=usgs_url,src=/tmp/usgs_url .`
+- [ ] Initial deploy triggered from `main` branch
+- [ ] App accessible at `https://lindolph.onrender.com`
+- [ ] Auto-deploy on git push verified
 
 ---
 
 ## Final Wrap-Up
 
-- [ ] EC2 public IP added to README demo link
+- [ ] Render demo URL added to README
 - [ ] Screenshot of live dashboard added to README
 - [ ] `DEPLOYMENT.md` written with exact steps used
 - [ ] All checklist items above checked off

@@ -1,9 +1,16 @@
+import type { USGSFeature } from "@/lib/schema/usgs-feature";
+
 export interface RegionGroup {
   name: string;
   count: number;
   avgMag: number | null;
   avgDepth: number | null;
   totalEnergy: number;
+}
+
+export interface EarthquakeFeed {
+  features: USGSFeature[];
+  generatedAt: number;
 }
 
 export interface EarthquakeMetrics {
