@@ -1,0 +1,24 @@
+# dependencies
+node_modules
+
+# next.js
+.next
+
+# git hooks and editor settings
+.git
+.husky
+.zed
+
+# env files (do not bake secrets into the image!)
+.env*
+
+# documentation
+*.md
+
+# docker configuration files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# secrets
+secrets/
