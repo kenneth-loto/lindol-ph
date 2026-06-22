@@ -1,12 +1,16 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { formatScientific } from "@/lib/energy-calculation";
+import { formatTime } from "@/lib/time";
 import type { EarthquakeMetrics } from "@/types/earthquakes";
 
 interface Props {
   metrics: EarthquakeMetrics;
+  generatedAt: number;
 }
 
-export function MetricStrips({ metrics }: Props) {
+export function MetricStrips({ metrics, generatedAt }: Props) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <MetricCard
@@ -26,6 +30,9 @@ export function MetricStrips({ metrics }: Props) {
         value={metrics.topRegion}
         sub={formatScientific(metrics.topRegionEnergy)}
       />
+      <div className="col-span-full mt-1 text-right text-muted-foreground text-xs">
+        Data from USGS · generated {formatTime(generatedAt)}
+      </div>
     </div>
   );
 }

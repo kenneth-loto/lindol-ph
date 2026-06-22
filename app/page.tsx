@@ -1,24 +1,23 @@
 import { Suspense } from "react";
-import { getCachedWeeklyPhilippineQuakes } from "@/app/dal/earthquake";
 import { EnergyTable } from "@/components/energy-table";
 import { IncidentFeedTable } from "@/components/incident-feed-table";
 import { MetricStrips } from "@/components/metric-strips";
 import { RegionalCharts } from "@/components/regional-charts";
 import {
-  filterPhilippineEarthquakes,
   getMagnitudeBuckets,
   getMetrics,
   groupByRegion,
   toIncidentFeedItems,
 } from "@/lib/earthquake-analytics";
+import { getWeeklyPhilippineEarthquakes } from "./dal/earthquakes";
 
 export default async function Home() {
-  const allQuakes = await getCachedWeeklyPhilippineQuakes();
-  const phQuakes = filterPhilippineEarthquakes(allQuakes);
-  const regionGroups = groupByRegion(phQuakes);
-  const buckets = getMagnitudeBuckets(phQuakes);
-  const metrics = getMetrics(phQuakes, regionGroups);
-  const incidentFeedItems = toIncidentFeedItems(phQuakes);
+  const { features: philippineEarthquakes, generatedAt } =
+    await getWeeklyPhilippineEarthquakes();
+  const regionGroups = groupByRegion(philippineEarthquakes);
+  const buckets = getMagnitudeBuckets(philippineEarthquakes);
+  const metrics = getMetrics(philippineEarthquakes, regionGroups);
+  const incidentFeedItems = toIncidentFeedItems(philippineEarthquakes);
 
   return (
     <>
@@ -29,7 +28,11 @@ export default async function Home() {
         </p>
       </div>
 
-      <MetricStrips metrics={metrics} />
+      {/* TODO: create a data table skeleton*/}
+      {/* TODO: refactor metric strips only the timestamp is dynamic */}
+      <Suspense fallback={<div>Loading...</div>}>
+        <MetricStrips metrics={metrics} generatedAt={generatedAt} />
+      </Suspense>
 
       {/* TODO: create a data table skeleton*/}
       <Suspense fallback={<div>Loading...</div>}>
