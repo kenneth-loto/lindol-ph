@@ -146,14 +146,15 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ---
 
-## Render Deployment (Web Service — Docker)
+## Render Deployment (Existing Image from GHCR)
 
-- [ ] GitHub repo connected to Render as a new Web Service (Docker runtime)
-- [ ] `USGS_URL` set as a masked environment variable in Render dashboard
-- [ ] Build Command set to: `echo "$USGS_URL" > /tmp/usgs_url && docker build --secret id=usgs_url,src=/tmp/usgs_url .`
-- [ ] Initial deploy triggered from `main` branch
+- [ ] GitHub Secrets set: `USGS_URL`, `FDSN_BASE_URL`, `SENTRY_AUTH_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SITE_URL`, `RENDER_DEPLOY_HOOK`
+- [ ] Render service switched to **Existing Image** → `ghcr.io/kenneth-loto/lindol-ph:latest`
+- [ ] GHCR credentials configured in Render (PAT with `read:packages`)
+- [ ] Runtime env vars set in Render dashboard
+- [ ] Deploy hook created and wired to GitHub Secrets
+- [ ] Push to `main` triggers full pipeline: CI → Docker build → GHCR push → Render deploy
 - [ ] App accessible at `https://lindolph.onrender.com`
-- [ ] Auto-deploy on git push verified
 
 ---
 

@@ -2,8 +2,6 @@
 
 A minimalist seismic analytics dashboard that surfaces real-time earthquake activity across the Philippines. Pulls live data from the USGS Earthquake Hazards Program, isolates Philippine events, and computes estimated energy released per region using the Gutenberg-Richter energy relation.
 
-<!--Built to demonstrate three distinct engineering skills: public API integration with server-side data processing, client-side data visualization, and containerized cloud deployment on AWS.-->
-
 <!-----
 
 ## Live Demo
@@ -145,18 +143,11 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Deployment (AWS EC2)
+## Deployment
 
-> Full deployment steps documented in [`DEPLOYMENT.md`](./DEPLOYMENT.md)
+> Full steps in [`DEPLOYMENT.md`](./DEPLOYMENT.md)
 
-**Summary:**
-
-1. Launch EC2 t2.micro (Amazon Linux 2), open port 80 in Security Group
-2. SSH into instance, install Docker
-3. Copy project or clone from GitHub
-4. `docker build -t lindolph .`
-5. `docker run -d -p 80:3000 lindolph`
-6. Access via public EC2 IP
+Push to `main` → GitHub Actions builds the Docker image with BuildKit secrets, pushes to GHCR, then triggers Render to pull and deploy.
 
 ---
 
@@ -174,17 +165,6 @@ Update frequency: Every 5 minutes at source, cached at 1 hour in this app
 Gutenberg, B., & Richter, C. F. (1956). Earthquake magnitude, intensity, energy, and acceleration. _Bulletin of the Seismological Society of America_, 46(2), 105–145.
 
 > The energy values produced by this app are **estimates** for analytical and educational purposes. They are not equivalent to official PHIVOLCS or USGS energy calculations, which use more complex physics-based models.
-
----
-
-<!--## What This Project Demonstrates
-
-- Consuming and processing a real public REST API with typed TypeScript utilities
-- Server-side data fetching and ISR caching in Next.js App Router
-- Client-side filtering and search with React state
-- Application of a real scientific formula to raw data
-- Multi-stage Docker builds for lean production images
-- Manual cloud deployment to AWS EC2 free tier-->
 
 ---
 
