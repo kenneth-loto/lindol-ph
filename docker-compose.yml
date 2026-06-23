@@ -3,6 +3,12 @@ name: lindol-ph
 secrets:
   usgs_url:
     file: ./secrets/usgs_url.txt
+  fdsn_base_url:
+    file: ./secrets/fdsn_base_url.txt
+  sentry_auth_token:
+    file: ./secrets/sentry_auth_token.txt
+  next_public_sentry_dsn:
+    file: ./secrets/next_public_sentry_dsn.txt
 
 services:
   web:
@@ -12,6 +18,9 @@ services:
       context: .
       secrets:
         - usgs_url
+        - fdsn_base_url
+        - sentry_auth_token
+        - next_public_sentry_dsn
     ports:
       - "3000:3000"
     env_file:

@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ColumnHeader } from "@/components/data-table/components";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatTime } from "@/lib/time";
+import { formatRelativeTime } from "@/lib/relative-time";
 import type { IncidentFeedItem } from "@/types/earthquakes";
 
 export const incidentFeedColumns: ColumnDef<IncidentFeedItem>[] = [
@@ -105,7 +105,7 @@ export const incidentFeedColumns: ColumnDef<IncidentFeedItem>[] = [
     header: ({ column }) => <ColumnHeader column={column} title="Time" />,
     cell: ({ row }) => (
       <span className="text-muted-foreground text-xs">
-        {formatTime(row.original.time)}
+        {formatRelativeTime(row.original.time)}
       </span>
     ),
   },

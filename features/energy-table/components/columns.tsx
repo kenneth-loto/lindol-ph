@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatScientific } from "@/lib/energy-calculation";
 import type { RegionGroup } from "@/types/earthquakes";
 
-export const regionColumns: ColumnDef<RegionGroup>[] = [
+export const energyColumns: ColumnDef<RegionGroup>[] = [
   {
     id: "select",
     header: ({ table }) => (
