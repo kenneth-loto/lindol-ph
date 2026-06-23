@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/data-table";
 import type { FilterConfig } from "@/types/data-table";
 import type { IncidentFeedItem } from "@/types/earthquakes";
-import { incidentFeedColumns } from "./incident-feed-columns";
+import { incidentFeedColumns } from "./components/columns";
 
 interface IncidentFeedTableProps {
   items: IncidentFeedItem[];
@@ -19,10 +19,9 @@ const magnitudeFilters: FilterConfig[] = [
   },
 ];
 
-// TODO: refactor maybe, new page or feature folders
 export function IncidentFeedTable({ items }: IncidentFeedTableProps) {
   return (
-    <div className="mt-12 rounded-md border-2 p-6">
+    <div className="mt-12">
       <div className="mb-4">
         <h2 className="font-semibold text-xl tracking-tight">Incident Feed</h2>
         <p className="text-muted-foreground text-sm">
