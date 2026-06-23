@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # ---- Dependencies ----
 
 # Separate stage so bun install is cached independently of source changes.
@@ -6,7 +8,7 @@ FROM oven/bun:1.3.14 AS deps
 WORKDIR /app
 
 # Copy only the manifest + lockfile first so this layer stays cached
-# and bun install is skipped on rebuilds where dependencies didn't change.
+# and bun install is skippedgit on rebuilds where dependencies didn't change.
 COPY package.json bun.lock* ./
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile

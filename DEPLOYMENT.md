@@ -2,7 +2,9 @@
 
 ## How it works
 
-Push to `main` → GitHub Actions (`deploy.yml`) builds the Docker image with BuildKit secrets, pushes to GHCR, then triggers Render to pull and deploy.
+```
+Push to main → GHA (lint → typecheck → test → image) → GHCR → Render deploy hook
+```
 
 The Dockerfile uses `--mount=type=secret` — secrets exist only during the builder `RUN` step, never in image layers or the runner stage.
 
@@ -10,14 +12,14 @@ The Dockerfile uses `--mount=type=secret` — secrets exist only during the buil
 
 Set these in **GitHub → Settings → Secrets and variables → Actions**:
 
-| Secret                   | Required | Notes                                          |
-| ------------------------ | -------- | ---------------------------------------------- |
-| `USGS_URL`               | ✅       |                                                |
-| `FDSN_BASE_URL`          | ✅       |                                                |
-| `SENTRY_AUTH_TOKEN`      | ✅       | Sentry source map upload auth token            |
-| `NEXT_PUBLIC_SENTRY_DSN` | ✅       | Sentry DSN for client-side error reporting     |
-| `NEXT_PUBLIC_SITE_URL`   | ✅       | Used by CI build; should match production URL  |
-| `RENDER_DEPLOY_HOOK`     | ✅       | From Render dashboard → Settings → Deploy Hook |
+| Secret                  | Required | Notes                                         |
+| ----------------------- | -------- | --------------------------------------------- |
+| `USGS_URL`              | ✅       |                                               |
+| `FDSN_BASE_URL`         | ✅       |                                               |
+| `SENTRY_AUTH_TOKEN`     | ✅       | Sentry source map upload auth token           |
+| `NEXT_PUBLIC_SENTRY_DSN`| ✅       | Sentry DSN for client-side error reporting    |
+| `NEXT_PUBLIC_SITE_URL`  | ✅       | Used by CI build                              |
+| `RENDER_DEPLOY_HOOK`    | ✅       | From Render dashboard → Settings → Deploy Hook|
 
 ## Render Setup
 
@@ -44,25 +46,21 @@ Render needs a token to pull a private GHCR image:
    - **Username:** `kenneth-loto`
    - **Password:** (the PAT you just created)
 
-Alternatively, make the package **public** (no credentials needed):
+Alternatively, make the package **public**:
 
-- After first push to GHCR, go to **github.com → Packages → lindol-ph → Package settings → Change visibility → Public**
+- After first push, go to **github.com → Packages → lindol-ph → Package settings → Change visibility → Public**
 
 ### 4. Environment Variables (Runtime)
 
 Render Dashboard → **Your Service** → **Environment Variables**:
 
-| Variable                 | Masked |
-| ------------------------ | ------ |
-| `PORT`                   | No     |
-| `NODE_ENV`               | No     |
-| `USGS_URL`               | ✅     |
-| `FDSN_BASE_URL`          | ✅     |
-| `SENTRY_AUTH_TOKEN`      | ✅     |
-| `NEXT_PUBLIC_SENTRY_DSN` | ✅     |
-| `NEXT_PUBLIC_SITE_URL`   | No     |
-
-(`PORT` and `NODE_ENV` are already baked into the Dockerfile; override only if needed.)
+| Variable               | Masked |
+| ---------------------- | ------ |
+| `USGS_URL`             | ✅     |
+| `FDSN_BASE_URL`        | ✅     |
+| `SENTRY_AUTH_TOKEN`    | ✅     |
+| `NEXT_PUBLIC_SENTRY_DSN` | ✅   |
+| `NEXT_PUBLIC_SITE_URL` | No     |
 
 ## Trigger a Deploy
 
@@ -72,13 +70,13 @@ Push to `main`:
 git push origin main
 ```
 
-Or trigger manually from **GitHub → Actions → Deploy → Run workflow**.
+Or trigger manually from **GitHub → Actions → CI → Run workflow**.
 
 ## URL
 
-After deploy, Render provides `https://<service-name>.onrender.com`.
+Render provides `https://<service-name>.onrender.com`.
 
-## Local Build (same Dockerfile)
+## Local Build
 
 ```bash
 docker compose build
