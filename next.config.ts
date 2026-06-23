@@ -1,6 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
-import { serverEnv } from "./env/server";
 import "./env/server";
 import "./env/client";
 
@@ -13,6 +12,6 @@ const nextConfig: NextConfig = {
 export default withSentryConfig(nextConfig, {
   org: "kenzu-org",
   project: "lindol-ph",
-  authToken: serverEnv.SENTRY_AUTH_TOKEN,
-  silent: !serverEnv.CI,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
 });
