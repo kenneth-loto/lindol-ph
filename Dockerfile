@@ -61,11 +61,7 @@ ENV HOSTNAME=0.0.0.0
 # so a single copy of the directory is all that's needed.
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
-
-# Uncomment once a public/ folder exists — standalone output
-# does not include it automatically.
-# COPY --from=builder --chown=bun:bun /app/public ./public
-# Built-in non-root user from oven/bun:1.3.14-slim — no manual user creation needed.
+COPY --from=builder --chown=bun:bun /app/public ./public
 
 USER bun
 EXPOSE 3000

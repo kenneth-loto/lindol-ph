@@ -2,12 +2,11 @@
 
 A minimalist seismic analytics dashboard that surfaces real-time earthquake activity across the Philippines. Pulls live data from the USGS Earthquake Hazards Program, isolates Philippine events, and computes estimated energy released per region using the Gutenberg-Richter energy relation.
 
-<!-----
-
 ## Live Demo
 
-> Deployed on AWS EC2 (t2.micro) via Docker
-> `http://<ec2-public-ip>` — link added after deployment-->
+> [lindol-ph.onrender.com](https://lindol-ph.onrender.com/)
+
+![Preview](public/images/lindol-ph-preview.webp)
 
 ---
 
@@ -25,7 +24,7 @@ LindolPH solves this by filtering, grouping, and computing actionable metrics fr
 
 Three at-a-glance cards at the top of the dashboard:
 
-- **Total PH Incidents** — count of Philippine earthquakes in the past 7 days
+- **Total PH Incidents** — count of Philippine earthquakes in the past 7 days, with % change vs the previous week
 - **Peak Magnitude** — strongest recorded event this week and its location
 - **Highest Energy Region** — region with the greatest total estimated energy released
 
@@ -49,14 +48,14 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 
 ## Tech Stack
 
-| Layer     | Choice                               | Reason                                    |
-| --------- | ------------------------------------ | ----------------------------------------- |
-| Framework | Next.js 16 (App Router) + TypeScript | Server-side fetch with ISR caching        |
-| Styling   | Tailwind CSS + shadcn/ui             | Utility-first, accessible components      |
-| Charts    | Recharts                             | Included via shadcn charts, composable    |
-| Runtime   | Bun                                  | Faster installs, native TS test runner    |
-| Container | Docker (multi-stage build)           | Lean production image                     |
-| Cloud     | AWS EC2 t2.micro                     | Free tier, real infrastructure deployment |
+| Layer     | Choice                               | Reason                                 |
+| --------- | ------------------------------------ | -------------------------------------- |
+| Framework | Next.js 16 (App Router) + TypeScript | Server-side fetch with ISR caching     |
+| Styling   | Tailwind CSS + shadcn/ui             | Utility-first, accessible components   |
+| Charts    | Recharts                             | Included via shadcn charts, composable |
+| Runtime   | Bun                                  | Faster installs, native TS test runner |
+| Container | Docker (multi-stage build)           | Lean production image                  |
+| Cloud     | Render (existing image from GHCR)    | GitOps pipeline, auto-deploy on push   |
 
 ---
 
@@ -65,29 +64,28 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 ```
 [ USGS GeoJSON API ]
         │
-        ▼ Server-side fetch (Next.js App Router)
-        │ revalidate: 3600 (1-hour ISR cache)
+        ▼ app/dal/earthquakes.ts
+        │ fetch + parse, revalidate: 3600
         │
-        ▼ utils/earthquake-analytics.ts
+        ▼ lib/earthquake-analytics.ts
         │ filterPhilippineQuakes()   → isolate PH events from global feed
         │ groupByRegion()            → strip prefix, extract city/province,
         │                               sum per-quake energy via calculateTotalEnergy()
         │ getMagnitudeBuckets()      → bucket into severity tiers (skips unrated events)
-        │ getMetrics()               → derive KPI values (peakMag stays null, never 0,
-        │                               when no rated event exists)
+        │ getMetrics()               → derive KPI values
         │
-        ▼ utils/energy-calculation.ts
+        ▼ lib/energy-calculation.ts
         │ calculateSeismicEnergy(mag)   → E = 10^(1.5M + 4.8), per single quake
         │ calculateTotalEnergy(mags)    → sums energy across a region's quakes,
         │                                  skipping unrated (null-magnitude) events
         │ sortRegionsByEnergy(groups)   → ranks already-aggregated regions descending
         │
-        ▼ app/page.tsx (passes typed props to components)
+        ▼ app/page.tsx → features/
         │
-        ├── components/MetricStrips.tsx
-        ├── components/EnergyTable.tsx
-        ├── components/RegionalCharts.tsx
-        └── components/IncidentFeed.tsx
+        ├── features/metric-strips/
+        ├── features/energy-table/
+        ├── features/regional-charts/
+        └── features/incident-feed-table/
 ```
 
 > **Note on energy calculation:** total energy per region is summed from individual quake magnitudes, not derived from the region's average magnitude. Because the magnitude→energy relationship is exponential, converting an averaged magnitude back to energy can understate the true total by orders of magnitude whenever quake sizes vary within a region — e.g. one M7.0 alongside several smaller quakes.
@@ -98,23 +96,58 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 
 ```
 lindolph/
+├── .github/workflows/
+│   ├── ci.yml                      # Lint → typecheck → test → image → deploy
+│   ├── codeql.yml                  # Security analysis
+│   └── auto-target-develop.yml     # PR routing
 ├── app/
+│   ├── dal/
+│   │   └── earthquakes.ts          # USGS fetch + response parsing
 │   ├── layout.tsx
 │   ├── page.tsx                    # Server component, data fetch entry point
-│   └── services/
-│       └── quakes.ts               # USGS fetch function
+│   ├── error.tsx                   # Sentry-captured error boundary
+│   ├── global-error.tsx            # Root error boundary
+│   ├── not-found.tsx               # 404 page
+│   └── globals.css
 ├── components/
-│   ├── MetricStrips.tsx            # KPI cards
-│   ├── EnergyTable.tsx             # Ranked energy release table
-│   ├── RegionalCharts.tsx          # Bar chart + donut chart
-│   └── IncidentFeed.tsx            # Searchable, filterable incident log
-├── utils/
+│   ├── data-table/                 # Reusable data table primitives
+│   ├── ui/                         # shadcn/ui primitives
+│   ├── theme-provider.tsx
+│   └── mode-toggle.tsx
+├── features/
+│   ├── metric-strips/              # KPI cards
+│   ├── energy-table/               # Ranked energy release table
+│   ├── regional-charts/            # Bar chart + donut chart
+│   └── incident-feed-table/        # Searchable, filterable incident log
+├── lib/
 │   ├── earthquake-analytics.ts     # Filter, group, aggregate utilities
-│   └── energy-calculation.ts       # Gutenberg-Richter formula + region ranking
+│   ├── energy-calculation.ts       # Gutenberg-Richter formula + region ranking
+│   ├── earthquakes.ts              # USGS data parsing utilities
+│   ├── data-table-parsers.ts       # Table column definitions + formatters
+│   ├── relative-time.ts            # Humanized timestamps
+│   ├── constants.ts                # App-wide constants
+│   ├── utils.ts                    # Shared helpers
+│   ├── schema/
+│   │   └── usgs-feature.ts         # Valibot schema for USGS response
+│   └── __tests__/
+│       └── earthquake-analytics.test.ts
 ├── types/
-│   └── earthquakes.ts              # TypeScript interfaces for USGS GeoJSON
+│   ├── earthquakes.ts              # TypeScript interfaces for USGS GeoJSON
+│   └── data-table.ts               # Table type definitions
+├── env/
+│   ├── server.ts                   # T3 env: server-side validation
+│   ├── client.ts                   # T3 env: client-side validation
+│   └── index.ts                    # Barrel exports
+├── public/
+│   └── images/
+│       └── lindol-ph-preview.webp
+├── secrets/                        # Local docker-compose secret files
+├── instrumentation.ts              # Sentry server instrumentation
+├── instrumentation-client.ts       # Sentry client instrumentation
+├── sentry.server.config.ts
+├── sentry.edge.config.ts
+├── next.config.ts
 ├── Dockerfile
-├── .dockerignore
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -136,7 +169,7 @@ Open [http://localhost:3000](http://localhost:3000)
 ### With Docker (local test)
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
