@@ -1,59 +1,86 @@
-# Deploy to Render (Docker Web Service)
+# Deploy
 
-## Prerequisites
+## How it works
 
-- GitHub repo pushed and accessible to Render
-- Render account (free tier works)
+Push to `main` → GitHub Actions (`deploy.yml`) builds the Docker image with BuildKit secrets, pushes to GHCR, then triggers Render to pull and deploy.
 
-## Environment Variables
+The Dockerfile uses `--mount=type=secret` — secrets exist only during the builder `RUN` step, never in image layers or the runner stage.
 
-Set these in Render dashboard → Environment Variables:
+## GitHub Secrets
 
-| Variable            | Masked | Notes                                                 |
-| ------------------- | ------ | ----------------------------------------------------- |
-| `USGS_URL`          | ✅     | Value from `.env.example`                             |
-| `SENTRY_AUTH_TOKEN` | ✅     | Only if Sentry is configured (see Monitoring section) |
+Set these in **GitHub → Settings → Secrets and variables → Actions**:
 
-## Build Command
+| Secret                   | Required | Notes                                          |
+| ------------------------ | -------- | ---------------------------------------------- |
+| `USGS_URL`               | ✅       |                                                |
+| `FDSN_BASE_URL`          | ✅       |                                                |
+| `SENTRY_AUTH_TOKEN`      | ✅       | Sentry source map upload auth token            |
+| `NEXT_PUBLIC_SENTRY_DSN` | ✅       | Sentry DSN for client-side error reporting     |
+| `NEXT_PUBLIC_SITE_URL`   | ✅       | Used by CI build; should match production URL  |
+| `RENDER_DEPLOY_HOOK`     | ✅       | From Render dashboard → Settings → Deploy Hook |
 
-Render's Docker runtime doesn't support `docker build --secret` directly. Use the Build Command field to inject env vars as secret files before the build:
+## Render Setup
+
+### 1. Create Deploy Hook
+
+Render Dashboard → **Your Service** → **Settings** → **Deploy Hook** → generate a hook URL. Add it as `RENDER_DEPLOY_HOOK` in GitHub Secrets.
+
+### 2. Switch to Existing Image
+
+Render Dashboard → **Your Service** → **Settings** → **Service** → **Source**:
+
+- **Source:** Select **Existing Image**
+- **Image:** `ghcr.io/kenneth-loto/lindol-ph:latest`
+- **Registry:** GitHub Container Registry (GHCR)
+
+### 3. GHCR Credentials
+
+Render needs a token to pull a private GHCR image:
+
+1. GitHub → **Settings → Developer settings → Personal access tokens → Tokens (classic)**
+2. Create a token with scope `read:packages`
+3. Render Dashboard → **Your Service** → **Settings** → **Registry Credentials**
+4. Add:
+   - **Username:** `kenneth-loto`
+   - **Password:** (the PAT you just created)
+
+Alternatively, make the package **public** (no credentials needed):
+
+- After first push to GHCR, go to **github.com → Packages → lindol-ph → Package settings → Change visibility → Public**
+
+### 4. Environment Variables (Runtime)
+
+Render Dashboard → **Your Service** → **Environment Variables**:
+
+| Variable                 | Masked |
+| ------------------------ | ------ |
+| `PORT`                   | No     |
+| `NODE_ENV`               | No     |
+| `USGS_URL`               | ✅     |
+| `FDSN_BASE_URL`          | ✅     |
+| `SENTRY_AUTH_TOKEN`      | ✅     |
+| `NEXT_PUBLIC_SENTRY_DSN` | ✅     |
+| `NEXT_PUBLIC_SITE_URL`   | No     |
+
+(`PORT` and `NODE_ENV` are already baked into the Dockerfile; override only if needed.)
+
+## Trigger a Deploy
+
+Push to `main`:
 
 ```bash
-echo "$USGS_URL" > /tmp/usgs_url && docker build --secret id=usgs_url,src=/tmp/usgs_url .
+git push origin main
 ```
 
-### Extending for Sentry (future)
-
-When Sentry is added, append the additional secret:
-
-```bash
-echo "$USGS_URL" > /tmp/usgs_url && echo "$SENTRY_AUTH_TOKEN" > /tmp/sentry_auth_token && docker build --secret id=usgs_url,src=/tmp/usgs_url --secret id=sentry_auth_token,src=/tmp/sentry_auth_token .
-```
-
-Each new secret follows the same `echo "$VAR" > /tmp/file && ... --secret id=name,src=/tmp/file` pattern.
-
-## Steps
-
-1. In Render dashboard: **New +** → **Web Service** → **Connect your GitHub repo**
-2. **Runtime:** Select **Docker**
-3. **Build Command:** Paste the command from above
-4. **Start Command:** Leave blank (defined in `CMD` in Dockerfile)
-5. **Plan:** Free
-6. Add environment variables (table above)
-7. Click **Deploy Web Service**
+Or trigger manually from **GitHub → Actions → Deploy → Run workflow**.
 
 ## URL
 
 After deploy, Render provides `https://<service-name>.onrender.com`.
 
-## Auto-Deploy
+## Local Build (same Dockerfile)
 
-Render auto-deploys on every push to the connected branch by default. To disable: Settings → Auto-Deploy → toggle off.
-
-## Monitoring (Sentry — future)
-
-When Sentry is added:
-
-1. Add `SENTRY_AUTH_TOKEN` to Render env vars (masked)
-2. Append it to the Build Command (see above)
-3. The Dockerfile's `ARG SENTRY_AUTH_TOKEN` + `ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN` will pick it up during `bun run build`
+```bash
+docker compose build
+docker compose up
+```
