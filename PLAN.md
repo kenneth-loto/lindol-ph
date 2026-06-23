@@ -116,21 +116,21 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ## Polish
 
-- [ ] Loading skeletons on each component
-- [ ] Empty state if USGS returns zero PH events
-- [ ] Mobile layout verified — all components stack cleanly
-- [ ] No console errors or hydration warnings in browser
+- [x] Loading skeletons on each component
+- [x] Empty state if USGS returns zero PH events
+- [x] Mobile layout verified — all components stack cleanly
+- [x] No console errors or hydration warnings in browser
 
 ---
 
 ## Monitoring — Sentry (Post-MVP)
 
-- [ ] `@sentry/nextjs` installed and configured via `npx @sentry/wizard@latest -i nextjs`
-- [ ] `SENTRY_AUTH_TOKEN` set as a masked env var in Render dashboard
-- [ ] `SENTRY_AUTH_TOKEN` passed as a build arg in Dockerfile (for source map upload during `bun run build`)
-- [ ] DAL error paths updated — `console.error` replaced with `Sentry.captureMessage` / `Sentry.captureException`
-- [ ] Source maps confirmed uploading and stack traces readable in Sentry dashboard
-- [ ] Alert rules configured (email / Slack / Discord) for USGS fetch failures and Valibot validation errors
+- [x] `@sentry/nextjs` installed and configured via `bunx @sentry/wizard@latest -i nextjs`
+- [x] `SENTRY_AUTH_TOKEN` set as a masked env var in Render dashboard
+- [x] `SENTRY_AUTH_TOKEN` passed as a secret in Dockerfile (for source map upload during `bun run build`)
+- [x] DAL error paths updated — `console.error` replaced with `Sentry.captureMessage` / `Sentry.captureException`
+- [x] Source maps confirmed uploading and stack traces readable in Sentry dashboard
+- [x] Alert rules configured (email / Slack / Discord) for USGS fetch failures and Valibot validation errors
 
 ---
 

@@ -31,7 +31,14 @@ ENV SKIP_ENV_VALIDATION=1
 # Mounts the secret as a file only for this one RUN step.
 # Never written to image layers, ENV, or build args — gone once this line finishes.
 RUN --mount=type=secret,id=usgs_url \
-    USGS_URL="$(cat /run/secrets/usgs_url)" bun run build
+    --mount=type=secret,id=fdsn_base_url \
+    --mount=type=secret,id=sentry_auth_token \
+    --mount=type=secret,id=next_public_sentry_dsn \
+    USGS_URL="$(cat /run/secrets/usgs_url)" \
+    FDSN_BASE_URL="$(cat /run/secrets/fdsn_base_url)" \
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)" \
+    NEXT_PUBLIC_SENTRY_DSN="$(cat /run/secrets/next_public_sentry_dsn)" \
+    bun run build
 
 # ---- Runner ----
 

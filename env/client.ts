@@ -7,9 +7,11 @@ export const clientEnv = createEnv({
       v.pipe(v.string(), v.url()),
       "http://localhost:3000",
     ),
+    NEXT_PUBLIC_SENTRY_DSN: v.pipe(v.string(), v.url()),
   },
   runtimeEnv: {
     NEXT_PUBLIC_SITE_URL:
       process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
 });

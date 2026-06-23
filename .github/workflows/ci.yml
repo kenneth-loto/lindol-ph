@@ -109,6 +109,9 @@ jobs:
     needs: [lint, typecheck] # test
     env:
       USGS_URL: ${{ secrets.USGS_URL }}
+      FDSN_BASE_URL: ${{ secrets.FDSN_BASE_URL }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
       NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
     steps:
       - name: Checkout

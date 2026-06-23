@@ -28,9 +28,9 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
   );
 
   return (
-    <div className="flex flex-col gap-4 px-2 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
-      <div className="order-1 flex items-center justify-center gap-2 lg:order-3">
-        <div className="lg:hidden">{pageText}</div>
+    <div className="flex flex-col gap-4 px-2 md:flex-row md:items-center md:justify-between md:gap-0">
+      <div className="order-1 flex items-center justify-center gap-2 md:order-3">
+        <div className="md:hidden">{pageText}</div>
         <Button
           variant="outline"
           size="icon"
@@ -73,7 +73,7 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
         </Button>
       </div>
 
-      <div className="order-2 flex items-center justify-center gap-6 lg:order-2 lg:gap-8">
+      <div className="order-2 flex items-center justify-center gap-6 md:order-2 md:gap-8">
         <div className="flex items-center gap-2">
           <p className="font-medium text-sm">Rows per page</p>
           <Select
@@ -92,10 +92,10 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
             </SelectContent>
           </Select>
         </div>
-        <div className="hidden lg:block">{pageText}</div>
+        <div className="hidden md:block">{pageText}</div>
       </div>
 
-      <div className="order-3 flex-1 text-center text-muted-foreground text-sm lg:order-1 lg:text-left">
+      <div className="order-3 flex-1 text-center text-muted-foreground text-sm md:order-1 md:text-left">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>

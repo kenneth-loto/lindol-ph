@@ -6,6 +6,7 @@ import {
   getMetrics,
   groupByRegion,
   stripPrefix,
+  toIncidentFeedItems,
 } from "../earthquake-analytics";
 import {
   calculateSeismicEnergy,
@@ -87,8 +88,8 @@ describe("Earthquake Analytics Suite", () => {
   });
 
   test("groupByRegion aggregates and sorts by energy descending", () => {
-    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
-    const groups = groupByRegion(phQuakes);
+    const phippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const groups = groupByRegion(phippineEarthquakes);
 
     expect(groups.length).toBe(3); // Davao City, Calapan, Mindanao
 
@@ -109,17 +110,17 @@ describe("Earthquake Analytics Suite", () => {
   });
 
   test("getMagnitudeBuckets distributes magnitudes correctly, skipping nulls", () => {
-    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
-    const buckets = getMagnitudeBuckets(phQuakes);
+    const philippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const buckets = getMagnitudeBuckets(philippineEarthquakes);
 
     // 2.8 -> minor, 4.5 -> light, 5.1 -> strong, null -> skipped
     expect(buckets).toEqual({ minor: 1, light: 1, strong: 1 });
   });
 
   test("getMetrics generates accurate high-level summary KPIs", () => {
-    const phQuakes = filterPhilippineEarthquakes(mockFeatures);
-    const groups = groupByRegion(phQuakes);
-    const metrics = getMetrics(phQuakes, groups);
+    const philippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const groups = groupByRegion(philippineEarthquakes);
+    const metrics = getMetrics(philippineEarthquakes, groups);
 
     expect(metrics.totalCount).toBe(4);
     expect(metrics.peakMag).toBe(5.1);
@@ -151,5 +152,58 @@ describe("Earthquake Analytics Suite", () => {
     const metrics = getMetrics(allUnreviewed, groups);
 
     expect(metrics.peakMag).toBeNull();
+  });
+
+  test("toIncidentFeedItems transforms features into sorted feed items", () => {
+    const philippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const items = toIncidentFeedItems(philippineEarthquakes);
+
+    expect(items.length).toBe(4);
+
+    // Check shape of one item
+    const davao = items.find((i) => i.id === "us7000mock1");
+    expect(davao).toBeDefined();
+    expect(davao?.mag).toBe(4.5);
+    expect(davao?.location).toBe("Davao City, Philippines");
+    expect(davao?.time).toBe(1718800000000);
+
+    // Null mag preserved
+    const mindanao = items.find((i) => i.id === "us7000mock4");
+    expect(mindanao?.mag).toBeNull();
+
+    // Sorted most recent first
+    expect(items[0].time).toBeGreaterThanOrEqual(items[items.length - 1].time);
+  });
+
+  test("toIncidentFeedItems returns empty array for empty input", () => {
+    expect(toIncidentFeedItems([])).toEqual([]);
+  });
+
+  test("getMetrics computes vsLastWeek percentage correctly", () => {
+    const philippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const groups = groupByRegion(philippineEarthquakes);
+
+    // 4 this week vs 10 last week = -60%
+    const metrics = getMetrics(philippineEarthquakes, groups, 10);
+    expect(metrics.vsLastWeek).toBe(-60);
+
+    // 4 this week vs 2 last week = +100%
+    const up = getMetrics(philippineEarthquakes, groups, 2);
+    expect(up.vsLastWeek).toBe(100);
+
+    // 4 this week vs 4 last week = 0%
+    const flat = getMetrics(philippineEarthquakes, groups, 4);
+    expect(flat.vsLastWeek).toBe(0);
+  });
+
+  test("getMetrics returns null vsLastWeek when previous count is falsy", () => {
+    const philippineEarthquakes = filterPhilippineEarthquakes(mockFeatures);
+    const groups = groupByRegion(philippineEarthquakes);
+
+    const omitted = getMetrics(philippineEarthquakes, groups);
+    expect(omitted.vsLastWeek).toBeNull();
+
+    const zero = getMetrics(philippineEarthquakes, groups, 0);
+    expect(zero.vsLastWeek).toBeNull();
   });
 });
