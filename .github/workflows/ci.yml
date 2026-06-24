@@ -3,20 +3,8 @@ name: CI
 on:
   push:
     branches: [main, develop]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".gitattributes"
-      - ".lintstagedrc.json"
-      - ".zed/**"
   pull_request:
     branches: [main, develop]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".gitattributes"
-      - ".lintstagedrc.json"
-      - ".zed/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,99 +14,136 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
-    name: Dependency Review
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    if: github.event_name == 'pull_request' # only runs on PRs, not pushes
-    permissions:
-      contents: read
-      pull-requests: write # needed to post summary comment on the PR
+    timeout-minutes: 2
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Filter paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!(**.md|.gitignore|.gitattributes|.lintstagedrc.json|.zed/**)'
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        if: needs.changes.outputs.code == 'true'
+        uses: actions/checkout@v7
+
       - name: Dependency Review
+        if: needs.changes.outputs.code == 'true'
         uses: actions/dependency-review-action@v5.0.0
         with:
-          fail-on-severity: moderate # blocks PRs that introduce moderate+ CVEs
-          comment-summary-in-pr: always # posts a summary table on every PR
-          allow-licenses: MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause # common permissive licenses
-          warn-only: true # unknown licenses warn but never fail the check
+          fail-on-severity: moderate
+          comment-summary-in-pr: always
+          allow-licenses: MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause
+          warn-only: true
 
   lint:
     name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    needs: changes
     steps:
       - name: Checkout
+        if: needs.changes.outputs.code == 'true'
         uses: actions/checkout@v7
 
       - name: Setup Biome
+        if: needs.changes.outputs.code == 'true'
         uses: biomejs/setup-biome@v2
         with:
           version: 2.2.0
 
       - name: Run Biome CI
+        if: needs.changes.outputs.code == 'true'
         run: biome ci
 
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    needs: changes
     steps:
       - name: Checkout
+        if: needs.changes.outputs.code == 'true'
         uses: actions/checkout@v7
 
       - name: Setup Bun
+        if: needs.changes.outputs.code == 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.14"
           cache: true
 
       - name: Install dependencies
+        if: needs.changes.outputs.code == 'true'
         run: bun install --frozen-lockfile
 
       - name: Run typecheck
+        if: needs.changes.outputs.code == 'true'
         run: bun typecheck
 
   test:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    needs: changes
     steps:
       - name: Checkout
+        if: needs.changes.outputs.code == 'true'
         uses: actions/checkout@v7
 
       - name: Setup Bun
+        if: needs.changes.outputs.code == 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.14"
           cache: true
 
       - name: Install dependencies
+        if: needs.changes.outputs.code == 'true'
         run: bun install --frozen-lockfile
 
       - name: Run tests
+        if: needs.changes.outputs.code == 'true'
         run: bun test
 
   image:
     name: Build & Push Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [lint, typecheck, test]
+    needs: [changes, lint, typecheck, test]
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout
+        if: needs.changes.outputs.code == 'true'
         uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
+        if: needs.changes.outputs.code == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GHCR
-        if: github.ref_name == 'main' && github.event_name == 'push'
+        if: needs.changes.outputs.code == 'true' && github.ref_name == 'main' && github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -126,6 +151,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        if: needs.changes.outputs.code == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -143,8 +169,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [image]
-    if: github.ref_name == 'main' && github.event_name == 'push'
+    needs: [changes, image]
+    if: github.ref_name == 'main' && github.event_name == 'push' && needs.changes.outputs.code == 'true'
     steps:
       - name: Trigger Render deploy
         run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
