@@ -1,46 +1,33 @@
 import { Suspense } from "react";
-import { DataTableSkeleton } from "@/components/data-table/components";
-import { EnergyTable } from "@/features/energy-table";
-import { IncidentFeedTable } from "@/features/incident-feed-table";
-import { MetricStrips } from "@/features/metric-strips";
-import { RegionalCharts } from "@/features/regional-charts";
-import {
-  getMagnitudeBuckets,
-  getMetrics,
-  groupByRegion,
-  toIncidentFeedItems,
-} from "@/lib/earthquake-analytics";
-import { getWeeklyPhilippineEarthquakes } from "./dal/earthquakes";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Spinner } from "@/components/ui/spinner";
+import { HomePageContent } from "@/features/home-page";
 
-export default async function Home() {
-  const {
-    features: philippineEarthquakes,
-    previousWeekFeatures,
-    generatedAt,
-  } = await getWeeklyPhilippineEarthquakes();
-
-  const regionGroups = groupByRegion(philippineEarthquakes);
-  const buckets = getMagnitudeBuckets(philippineEarthquakes);
-  const metrics = getMetrics(
-    philippineEarthquakes,
-    regionGroups,
-    previousWeekFeatures.length,
-  );
-  const incidentFeedItems = toIncidentFeedItems(philippineEarthquakes);
-
+export default function Home() {
   return (
-    <>
-      <MetricStrips metrics={metrics} generatedAt={generatedAt} />
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <h1 className="font-bold text-2xl tracking-tight">Lindol PH</h1>
+          <ModeToggle />
+        </div>
+        <p className="text-base text-muted-foreground">
+          Philippine seismic activity — past 7 days
+        </p>
+      </div>
 
-      <RegionalCharts regionGroups={regionGroups} buckets={buckets} />
-
-      <Suspense fallback={<DataTableSkeleton />}>
-        <EnergyTable />
+      <Suspense
+        fallback={
+          <div className="mx-auto flex min-h-[50vh] items-center gap-2">
+            <Spinner />
+            <p className="text-muted-foreground text-sm">
+              Gathering seismic analytics...
+            </p>
+          </div>
+        }
+      >
+        <HomePageContent />
       </Suspense>
-
-      <Suspense fallback={<DataTableSkeleton />}>
-        <IncidentFeedTable items={incidentFeedItems} />
-      </Suspense>
-    </>
+    </div>
   );
 }

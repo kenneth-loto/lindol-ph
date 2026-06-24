@@ -1,15 +1,18 @@
-import { getWeeklyPhilippineEarthquakes } from "@/app/dal/earthquakes";
 import { DataTable } from "@/components/data-table";
 import { groupByRegion } from "@/lib/earthquake-analytics";
+import type { USGSFeature } from "@/lib/schema/usgs-feature";
 import { energyColumns } from "./components/columns";
 
-export async function EnergyTable() {
-  const { features } = await getWeeklyPhilippineEarthquakes();
+interface EnergyTableProps {
+  features: USGSFeature[];
+}
+
+export async function EnergyTable({ features }: EnergyTableProps) {
   const regionGroups = groupByRegion(features);
 
   return (
-    <div className="mt-12">
-      <div className="mb-4">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col">
         <h2 className="font-semibold text-xl tracking-tight">
           Energy Release by Region
         </h2>
