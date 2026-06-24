@@ -4,7 +4,9 @@ A minimalist seismic analytics dashboard that surfaces real-time earthquake acti
 
 ## Live Demo
 
-> [lindol-ph.onrender.com](https://lindol-ph.onrender.com/)
+[lindol-ph.onrender.com](https://lindol-ph.onrender.com/)
+
+> **Note:** Hosted on Render's free tier — the service sleeps after 15 minutes of inactivity. If you see a loading screen on first visit, it's waking up (takes ~30 seconds). Just wait a moment.
 
 ![Preview](public/images/lindol-ph-preview.webp)
 
