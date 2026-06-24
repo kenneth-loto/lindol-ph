@@ -1,6 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function DataTableSkeleton() {
+interface DataTableSkeletonProps {
+  showFilter?: boolean;
+}
+
+export function DataTableSkeleton({
+  showFilter = false,
+}: DataTableSkeletonProps) {
   return (
     <div className="mt-12">
       <div className="flex flex-col gap-2">
@@ -9,8 +15,12 @@ export function DataTableSkeleton() {
       </div>
 
       {/* search + view bar */}
-      <div className="flex items-center justify-between pt-4">
-        <Skeleton className="h-8 w-[150px] lg:w-[250px]" />
+      <div className="flex items-center justify-between pt-6">
+        {/* Search input and optional Filter button wrapped together */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-8 w-[150px] lg:w-[250px]" />
+          {showFilter && <Skeleton className="h-8 w-24" />}
+        </div>
         <Skeleton className="hidden h-8 w-20 lg:block" />
       </div>
 
@@ -24,13 +34,13 @@ export function DataTableSkeleton() {
         <div
           // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton rows, order never changes
           key={i}
-          className="grid grid-cols-3 gap-4 border-b pt-2 lg:grid-cols-5"
+          className="grid grid-cols-2 gap-4 border-b pt-2 lg:grid-cols-4"
         >
-          {Array.from({ length: 5 }).map((_, j) => (
+          {Array.from({ length: 4 }).map((_, j) => (
             <Skeleton
               // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton cols, order never changes
               key={j}
-              className={`h-7 w-full ${j >= 3 ? "hidden lg:block" : ""}`}
+              className={`h-7 w-full ${j >= 2 ? "hidden lg:block" : ""}`}
             />
           ))}
         </div>

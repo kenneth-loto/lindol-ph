@@ -4,7 +4,7 @@ import type { IncidentFeedItem } from "@/types/earthquakes";
 import { incidentFeedColumns } from "./components/columns";
 
 interface IncidentFeedTableProps {
-  items: IncidentFeedItem[];
+  incidentFeedItems: IncidentFeedItem[];
 }
 
 const magnitudeFilters: FilterConfig[] = [
@@ -19,10 +19,12 @@ const magnitudeFilters: FilterConfig[] = [
   },
 ];
 
-export function IncidentFeedTable({ items }: IncidentFeedTableProps) {
+export function IncidentFeedTable({
+  incidentFeedItems,
+}: IncidentFeedTableProps) {
   return (
-    <div className="mt-12">
-      <div className="mb-4">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col">
         <h2 className="font-semibold text-xl tracking-tight">Incident Feed</h2>
         <p className="text-muted-foreground text-sm">
           All recorded Philippine earthquakes, in the past 7 days
@@ -32,7 +34,7 @@ export function IncidentFeedTable({ items }: IncidentFeedTableProps) {
       <DataTable
         id="ift"
         columns={incidentFeedColumns}
-        data={items}
+        data={incidentFeedItems}
         filters={magnitudeFilters}
       />
     </div>

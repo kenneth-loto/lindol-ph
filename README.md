@@ -22,27 +22,26 @@ LindolPH solves this by filtering, grouping, and computing actionable metrics fr
 
 ## Features
 
-### KPI Metric Strips
+### Tabbed Dashboard
 
-Three at-a-glance cards at the top of the dashboard:
+The dashboard is organized into three tabs — **Overview**, **Energy Table**, and **Incident Feed Table** — with the active tab persisted in the URL via `?tab=`.
 
-- **Total PH Incidents** — count of Philippine earthquakes in the past 7 days, with % change vs the previous week
-- **Peak Magnitude** — strongest recorded event this week and its location
-- **Highest Energy Region** — region with the greatest total estimated energy released
+### Overview Tab
 
-### Energy Release Table
+Combines the KPI metrics and regional charts into a single view:
+
+- **KPI Cards** — Total PH Incidents (with % vs last week), Peak Magnitude + location, Highest Energy Region
+- **Most Active Regions** — Horizontal bar chart of top 5 regions by quake count
+- **Severity Distribution** — Donut chart: Minor (< 3.0), Light (3.0–4.9), Strong (5.0+)
+
+### Energy Table Tab
 
 Regions ranked by total estimated seismic energy released, calculated using the Gutenberg-Richter energy relation. Columns include quake count, average magnitude, average depth, and total estimated energy in joules (scientific notation).
 
 > **Formula:** `E = 10^(1.5M + 4.8)` joules  
 > Source: Gutenberg & Richter (1956), _Earthquake magnitude, intensity, energy, and acceleration_
 
-### Regional Charts
-
-- Horizontal bar chart — Top 5 most active Philippine regions by quake count
-- Donut chart — Severity distribution: Minor (< 3.0), Light (3.0–4.9), Strong (5.0+)
-
-### Incident Feed
+### Incident Feed Tab
 
 Scrollable log of every Philippine earthquake in the dataset. Filterable by magnitude threshold and searchable by location string. Each entry shows magnitude badge, location, and humanized timestamp.
 
@@ -52,7 +51,7 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 
 | Layer     | Choice                               | Reason                                 |
 | --------- | ------------------------------------ | -------------------------------------- |
-| Framework | Next.js 16 (App Router) + TypeScript | Server-side fetch with ISR caching     |
+| Framework | Next.js 16 (App Router) + TypeScript | `connection()` + `"use cache"` pattern |
 | Styling   | Tailwind CSS + shadcn/ui             | Utility-first, accessible components   |
 | Charts    | Recharts                             | Included via shadcn charts, composable |
 | Runtime   | Bun                                  | Faster installs, native TS test runner |
@@ -67,7 +66,7 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 [ USGS GeoJSON API ]
         │
         ▼ app/dal/earthquakes.ts
-        │ fetch + parse, revalidate: 3600
+        │ fetch + parse, cached 1hr via "use cache" / cacheLife("hours")
         │
         ▼ lib/earthquake-analytics.ts
         │ filterPhilippineQuakes()   → isolate PH events from global feed
@@ -82,13 +81,20 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
         │                                  skipping unrated (null-magnitude) events
         │ sortRegionsByEnergy(groups)   → ranks already-aggregated regions descending
         │
-        ▼ app/page.tsx → features/
-        │
-        ├── features/metric-strips/
-        ├── features/energy-table/
-        ├── features/regional-charts/
-        └── features/incident-feed-table/
+        ▼ app/page.tsx (static shell)
+            │ <Suspense>
+            │
+            ▼ features/home-page/index.tsx
+              │ await connection()  → defers data fetch to request time
+              │
+              ├── features/overview/             → KPI cards + charts
+              ├── features/energy-table/          → ranked by energy release
+              └── features/incident-feed-table/   → searchable, filterable log
 ```
+
+### Build-time vs Request-time
+
+The page shell (heading, theme toggle, suspense fallback) is statically prerendered. The `HomePageContent` component calls `connection()` from `next/server` to defer data fetching to request time, preventing stale USGS data from being baked into the Docker image. At runtime, `"use cache"` in the DAL layer caches the response for 1 hour across requests.
 
 > **Note on energy calculation:** total energy per region is summed from individual quake magnitudes, not derived from the region's average magnitude. Because the magnitude→energy relationship is exponential, converting an averaged magnitude back to energy can understate the true total by orders of magnitude whenever quake sizes vary within a region — e.g. one M7.0 alongside several smaller quakes.
 
@@ -104,9 +110,9 @@ lindolph/
 │   └── auto-target-develop.yml     # PR routing
 ├── app/
 │   ├── dal/
-│   │   └── earthquakes.ts          # USGS fetch + response parsing
+│   │   └── earthquakes.ts          # USGS fetch + "use cache" with 1hr TTL
 │   ├── layout.tsx
-│   ├── page.tsx                    # Server component, data fetch entry point
+│   ├── page.tsx                    # Static shell → Suspense → HomePageContent
 │   ├── error.tsx                   # Sentry-captured error boundary
 │   ├── global-error.tsx            # Root error boundary
 │   ├── not-found.tsx               # 404 page
@@ -117,15 +123,18 @@ lindolph/
 │   ├── theme-provider.tsx
 │   └── mode-toggle.tsx
 ├── features/
-│   ├── metric-strips/              # KPI cards
+│   ├── home-page/                  # Request-time data fetch + tab orchestration
+│   ├── overview/                   # KPI cards + regional charts
 │   ├── energy-table/               # Ranked energy release table
-│   ├── regional-charts/            # Bar chart + donut chart
 │   └── incident-feed-table/        # Searchable, filterable incident log
+├── hooks/
+│   └── use-mobile.ts               # Responsive breakpoint detection
 ├── lib/
 │   ├── earthquake-analytics.ts     # Filter, group, aggregate utilities
 │   ├── energy-calculation.ts       # Gutenberg-Richter formula + region ranking
 │   ├── earthquakes.ts              # USGS data parsing utilities
 │   ├── data-table-parsers.ts       # Table column definitions + formatters
+│   ├── home-page-parsers.ts        # nuqs search param parsers
 │   ├── relative-time.ts            # Humanized timestamps
 │   ├── constants.ts                # App-wide constants
 │   ├── utils.ts                    # Shared helpers
@@ -191,7 +200,7 @@ Push to `main` → GitHub Actions builds the Docker image with BuildKit secrets,
 **USGS Earthquake Hazards Program**  
 Feed: `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson`  
 License: Public domain, no authentication required  
-Update frequency: Every 5 minutes at source, cached at 1 hour in this app
+Update frequency: Every 5 minutes at source, cached at 1 hour in this app via `"use cache"`
 
 ---
 
