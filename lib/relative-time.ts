@@ -5,11 +5,11 @@ import { DAYS, HOURS, MINUTES, WEEKS } from "./constants";
  * falling back to a short date once it's a week or older.
  *
  * @param epochMs - The timestamp to format, in milliseconds since the Unix epoch.
- * @returns A relative time string (e.g. `"just now"`, `"5m ago"`, `"3h ago"`,
+ * @returns A relative time string (e.g. `"Just now"`, `"5m ago"`, `"3h ago"`,
  * `"2d ago"`), or a short date string (e.g. `"Apr 25"`) if older than a week.
  *
  * @example
- * formatRelativeTime(Date.now() - 30_000)              // "just now"
+ * formatRelativeTime(Date.now() - 30_000)              // "Just now"
  * formatRelativeTime(Date.now() - 5 * 60 * 1000)       // "5m ago"
  * formatRelativeTime(Date.now() - 3 * 60 * 60 * 1000)  // "3h ago"
  * formatRelativeTime(Date.now() - 2 * 24 * 60 * 60 * 1000)  // "2d ago"
@@ -18,7 +18,7 @@ import { DAYS, HOURS, MINUTES, WEEKS } from "./constants";
 export function formatRelativeTime(epochMs: number): string {
   const diffMs = Date.now() - epochMs;
 
-  if (diffMs < MINUTES) return "just now";
+  if (diffMs < MINUTES) return "Just now";
   if (diffMs < HOURS) return `${Math.floor(diffMs / MINUTES)}m ago`;
   if (diffMs < DAYS) return `${Math.floor(diffMs / HOURS)}h ago`;
   if (diffMs < WEEKS) return `${Math.floor(diffMs / DAYS)}d ago`;

@@ -11,7 +11,7 @@ interface MetricsCardProps {
 export function MetricsCard({ label, icon, value, sub }: MetricsCardProps) {
   return (
     <Card className="rounded-md border">
-      <CardHeader className="flex items-center justify-between pb-4">
+      <CardHeader className="flex items-center justify-between pb-2">
         <CardTitle className="text-sm">{label}</CardTitle>
         <div className="text-muted-foreground">{icon}</div>
       </CardHeader>
