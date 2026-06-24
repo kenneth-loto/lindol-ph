@@ -3,33 +3,41 @@ name: CodeQL
 on:
   push:
     branches: [main, develop]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".gitattributes"
-      - ".lintstagedrc.json"
-      - ".zed/**"
   pull_request:
     branches: [main, develop]
-    paths-ignore:
-      - "**.md"
-      - ".gitignore"
-      - ".gitattributes"
-      - ".lintstagedrc.json"
-      - ".zed/**"
   schedule:
-    - cron: "0 3 * * 1" # Every Monday 3AM UTC — catches new CVEs on existing code
+    - cron: "0 3 * * 1"
 
 permissions:
   contents: read
-  security-events: write # required to upload SARIF results to the Security tab
+  security-events: write
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Filter paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!(**.md|.gitignore|.gitattributes|.lintstagedrc.json|.zed/**)'
+
   analyze:
     name: CodeQL Analyze
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
+    needs: changes
+    if: github.event_name == 'schedule' || needs.changes.outputs.code == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -37,8 +45,8 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: javascript-typescript # covers .js .ts .jsx .tsx
-          queries: security-extended # ~300 security queries, more thorough than default
+          languages: javascript-typescript
+          queries: security-extended
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -47,7 +55,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile # needed so CodeQL can trace your dependency tree
+        run: bun install --frozen-lockfile
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

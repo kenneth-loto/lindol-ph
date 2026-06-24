@@ -148,20 +148,20 @@ Track progress by feature, not by day. A feature is done when every box under it
 
 ## Render Deployment (Existing Image from GHCR)
 
-- [ ] GitHub Secrets set: `USGS_URL`, `FDSN_BASE_URL`, `SENTRY_AUTH_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SITE_URL`, `RENDER_DEPLOY_HOOK`
-- [ ] Render service switched to **Existing Image** → `ghcr.io/kenneth-loto/lindol-ph:latest`
-- [ ] GHCR credentials configured in Render (PAT with `read:packages`)
-- [ ] Runtime env vars set in Render dashboard
-- [ ] Deploy hook created and wired to GitHub Secrets
-- [ ] Push to `main` triggers full pipeline: CI → Docker build → GHCR push → Render deploy
-- [ ] App accessible at `https://lindolph.onrender.com`
+- [x] GitHub Secrets set: `USGS_URL`, `FDSN_BASE_URL`, `SENTRY_AUTH_TOKEN`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SITE_URL`, `RENDER_DEPLOY_HOOK`
+- [x] Render service switched to **Existing Image** → `ghcr.io/kenneth-loto/lindol-ph:latest`
+- [x] GHCR credentials configured in Render (PAT with `read:packages`)
+- [x] Runtime env vars set in Render dashboard
+- [x] Deploy hook created and wired to GitHub Secrets
+- [x] Push to `main` triggers full pipeline: CI → Docker build → GHCR push → Render deploy
+- [x] App accessible at `https://lindolph.onrender.com`
 
 ---
 
 ## Final Wrap-Up
 
-- [ ] Render demo URL added to README
-- [ ] Screenshot of live dashboard added to README
-- [ ] `DEPLOYMENT.md` written with exact steps used
-- [ ] All checklist items above checked off
-- [ ] Final commit pushed to GitHub
+- [x] Render demo URL added to README
+- [x] Screenshot of live dashboard added to README
+- [x] `DEPLOYMENT.md` written with exact steps used
+- [x] All checklist items above checked off
+- [x] Final commit pushed to GitHub
