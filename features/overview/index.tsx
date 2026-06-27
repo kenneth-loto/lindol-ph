@@ -1,4 +1,5 @@
 import { ActivityIcon, MapPinIcon, ZapIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import {
   Card,
   CardContent,
@@ -26,12 +27,13 @@ interface OverviewProps {
   generatedAt: number;
 }
 
-export function Overview({
+export async function Overview({
   metrics,
   regionGroups,
   buckets,
   generatedAt,
 }: OverviewProps) {
+  const t = await getTranslations("Overview");
   const topRegions = getTopRegions(regionGroups);
   const severityData = getSeverityData(buckets);
   const hasData = regionGroups.length > 0;
@@ -40,18 +42,18 @@ export function Overview({
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-6">
         <MetricsCard
-          label="Total PH Incidents"
+          label={t("totalIncidents")}
           icon={<ActivityIcon className="h-4 w-4" />}
           value={metrics.totalCount.toString()}
           sub={
             metrics.vsLastWeek !== null
-              ? `${metrics.vsLastWeek > 0 ? "+" : ""}${metrics.vsLastWeek}% vs last week`
+              ? `${metrics.vsLastWeek > 0 ? "+" : ""}${metrics.vsLastWeek}% ${t("vsLastWeek")}`
               : "—"
           }
         />
 
         <MetricsCard
-          label="Peak Magnitude"
+          label={t("peakMagnitude")}
           icon={<ZapIcon className="h-4 w-4" />}
           value={
             metrics.peakMag !== null ? `M${metrics.peakMag.toFixed(1)}` : "—"
@@ -60,7 +62,7 @@ export function Overview({
         />
 
         <MetricsCard
-          label="Highest Energy Region"
+          label={t("highestEnergyRegion")}
           icon={<MapPinIcon className="h-4 w-4" />}
           value={metrics.topRegion}
           sub={formatScientific(metrics.topRegionEnergy)}
@@ -70,8 +72,8 @@ export function Overview({
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
         <Card className="rounded-md border">
           <CardHeader>
-            <CardTitle>Most Active Regions</CardTitle>
-            <CardDescription>Top 5 by quake count, past 7 days</CardDescription>
+            <CardTitle>{t("mostActiveRegions")}</CardTitle>
+            <CardDescription>{t("mostActiveDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {hasData ? (
@@ -84,8 +86,8 @@ export function Overview({
 
         <Card className="rounded-md border">
           <CardHeader>
-            <CardTitle>Severity Distribution</CardTitle>
-            <CardDescription>By magnitude tier, past 7 days</CardDescription>
+            <CardTitle>{t("severityDistribution")}</CardTitle>
+            <CardDescription>{t("severityDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {hasData ? <SeverityChart data={severityData} /> : <EmptyChart />}
@@ -94,7 +96,7 @@ export function Overview({
       </div>
 
       <p className="text-right text-muted-foreground text-sm">
-        Last updated {" - "} <Timestamp timestamp={generatedAt} />
+        {t("lastUpdated")} {" - "} <Timestamp timestamp={generatedAt} />
       </p>
     </div>
   );

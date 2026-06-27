@@ -1,0 +1,106 @@
+{
+  "HomePage": {
+    "title": "Lindol PH",
+    "subtitle": "Sismikong aktibidad sa Pilipinas — nakaraang 7 araw",
+    "loading": "Kinokolekta ang sismikong datos...",
+    "tabs": {
+      "overview": "Pangkalahatang-ideya",
+      "energyTable": "Talaan ng Enerhiya",
+      "incidentFeedTable": "Daloy ng Insidente"
+    }
+  },
+  "Tabs": {
+    "overview": "Pangkalahatang-ideya",
+    "energyTable": "Talaan ng Enerhiya",
+    "incidentFeed": "Daloy ng Insidente"
+  },
+  "Overview": {
+    "totalIncidents": "Kabuuang Insidente sa PH",
+    "vsLastWeek": "kumpara noong nakaraang linggo",
+    "peakMagnitude": "Pinakamataas na Magnitude",
+    "highestEnergyRegion": "Rehiyong may Pinakamataas na Enerhiya",
+    "mostActiveRegions": "Mga Pinaka-aktibong Rehiyon",
+    "mostActiveDesc": "Nangungunang 5 ayon sa bilang ng mga lindol, sa nakaraang 7 araw",
+    "severityDistribution": "Pamamahagi ng Tindi",
+    "severityDesc": "Ayon sa antas ng magnitude, sa nakaraang 7 araw",
+    "lastUpdated": "Huling na-update",
+    "noData": "Walang datos na magagamit"
+  },
+  "EnergyTable": {
+    "title": "Paglabas ng Enerhiya ayon sa Rehiyon",
+    "description": "Niraranggo ayon sa tantiyang kabuuang sismikong enerhiya na nailabas",
+    "formula": "Pormula: E = 10^(1.5M + 4.8) joules · Gutenberg at Richter (1956). Ang mga halaga ay tantiya para sa analitikal na layunin lamang.",
+    "columns": {
+      "region": "Rehiyon",
+      "earthquakes": "Lindol",
+      "avgMag": "Karaniwang Mag",
+      "avgDepth": "Karaniwang Lalim",
+      "estEnergy": "Tantiyang Enerhiya"
+    }
+  },
+  "IncidentFeed": {
+    "title": "Daloy ng Insidente",
+    "description": "Lahat ng naitalang mga lindol sa Pilipinas, sa nakaraang 7 araw",
+    "filterMagnitude": "Magnitude",
+    "filterMinor": "Mahina (< 3.0)",
+    "filterLight": "Katamtaman (3.0 - 4.9)",
+    "filterStrong": "Malakas (5.0+)",
+    "columns": {
+      "magnitude": "Magnitude",
+      "location": "Lokasyon",
+      "time": "Oras"
+    }
+  },
+  "DataTable": {
+    "search": "Maghanap...",
+    "reset": "I-reset",
+    "view": "Tingnan",
+    "toggleColumns": "I-toggle ang mga hanay",
+    "resetView": "I-reset",
+    "clearFilters": "Alisin ang mga filter",
+    "noResults": "Walang nakitang resulta.",
+    "rowsPerPage": "Hilera bawat pahina",
+    "page": "Pahina {current} ng {total}",
+    "rowsSelected": "{selected} ng {total} hilera ang napili.",
+    "goFirstPage": "Pumunta sa unang pahina",
+    "goPreviousPage": "Pumunta sa nakaraang pahina",
+    "goNextPage": "Pumunta sa susunod na pahina",
+    "goLastPage": "Pumunta sa huling pahina",
+    "selected": "{count} ang napili"
+  },
+  "Theme": {
+    "toggle": "I-toggle ang tema"
+  },
+  "Locale": {
+    "switch": "Palitan ang wika",
+    "en": "English",
+    "fil": "Filipino"
+  },
+  "RelativeTime": {
+    "justNow": "Ngayon lang",
+    "minutesAgo": "{count, plural, one {1 minuto ang nakalipas} other {# minuto ang nakalipas}}",
+    "hoursAgo": "{count, plural, one {1 oras ang nakalipas} other {# oras ang nakalipas}}",
+    "daysAgo": "{count, plural, one {1 araw ang nakalipas} other {# araw ang nakalipas}}"
+  },
+  "Charts": {
+    "barLabel": "Mga Lindol",
+    "minor": "Mahina (<3.0)",
+    "light": "Katamtaman (3.0–4.9)",
+    "strong": "Malakas (5.0+)"
+  },
+  "Table": {
+    "selectAll": "Piliin lahat",
+    "selectRow": "Piliin ang hilera"
+  },
+  "ErrorPage": {
+    "title": "May naganap na hindi inaasahang error",
+    "description": "May naganap na hindi inaasahang error. Subukan ulit, maaaring pansamantala lang ito.",
+    "errorId": "Error ID: {digest}",
+    "retry": "Subukan ulit"
+  },
+  "NotFound": {
+    "title": "404 - Hindi Natagpuan ang Pahina",
+    "description": "Ang pahinang hinahanap mo ay wala o inilipat na.",
+    "backHome": "Bumalik sa unang pahina"
+  }
+}

@@ -2,6 +2,7 @@
 
 import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,50 +19,52 @@ interface ToolbarProps<TData> {
 
 export function Toolbar<TData>({
   table,
-  searchPlaceholder = "Search...",
+  searchPlaceholder,
   filters = [],
   actions,
 }: ToolbarProps<TData>) {
+  const t = useTranslations("DataTable");
   const isFiltered =
     table.getState().columnFilters.length > 0 ||
     !!table.getState().globalFilter;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-1 sm:flex-row sm:flex-wrap sm:items-center">
         <Input
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder ?? t("search")}
           value={table.getState().globalFilter ?? ""}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-8 w-[250px]"
         />
-        {filters.map((filter) => {
-          const column = table.getColumn(filter.columnId);
-
-          return column ? (
-            <FacetedFilter
-              key={filter.columnId}
-              column={column}
-              title={filter.title}
-              options={filter.options}
-            />
-          ) : null;
-        })}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              table.resetColumnFilters();
-              table.setGlobalFilter("");
-            }}
-          >
-            Reset
-            <X />
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {filters.map((filter) => {
+            const column = table.getColumn(filter.columnId);
+            return column ? (
+              <FacetedFilter
+                key={filter.columnId}
+                column={column}
+                title={filter.title}
+                options={filter.options}
+              />
+            ) : null;
+          })}
+          {isFiltered && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                table.resetColumnFilters();
+                table.setGlobalFilter("");
+              }}
+            >
+              {t("reset")}
+              <X />
+            </Button>
+          )}
+        </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-start gap-2 sm:justify-end">
         <ViewOptions table={table} />
         {actions}
       </div>

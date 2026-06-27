@@ -1,26 +1,12 @@
 "use client";
 
-import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { type ComponentProps, useEffect } from "react";
+import {
+  ThemeProvider as NextThemesProvider,
+  useTheme,
+} from "@/components/theme";
+import { announce } from "@/lib/announce";
 import { THEME_TOGGLE_KEY } from "@/lib/constants";
-
-function ThemeProvider({
-  children,
-  ...props
-}: ComponentProps<typeof NextThemesProvider>) {
-  return (
-    <NextThemesProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      {...props}
-    >
-      <ThemeHotkey />
-      {children}
-    </NextThemesProvider>
-  );
-}
 
 function isTypingTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
@@ -37,6 +23,7 @@ function isTypingTarget(target: EventTarget | null) {
 
 function ThemeHotkey() {
   const { resolvedTheme, setTheme } = useTheme();
+  const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -56,7 +43,8 @@ function ThemeHotkey() {
         return;
       }
 
-      setTheme(resolvedTheme === "dark" ? "light" : "dark");
+      setTheme(nextTheme);
+      announce(`Switched to ${nextTheme} theme`);
     }
 
     window.addEventListener("keydown", onKeyDown);
@@ -64,9 +52,25 @@ function ThemeHotkey() {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [resolvedTheme, setTheme]);
+  }, [nextTheme, setTheme]);
 
   return null;
 }
 
-export { ThemeProvider };
+export function ThemeProvider({
+  children,
+  ...props
+}: ComponentProps<typeof NextThemesProvider>) {
+  return (
+    <NextThemesProvider {...props}>
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        id="announcer"
+        className="sr-only"
+      />
+      <ThemeHotkey />
+      {children}
+    </NextThemesProvider>
+  );
+}

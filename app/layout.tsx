@@ -42,7 +42,7 @@ export default function RootLayout({
       )}
       suppressHydrationWarning
     >
-      <body className="mx-auto flex min-h-full max-w-6xl flex-col px-6 py-12">
+      <body className="mx-auto flex min-h-full max-w-6xl flex-col px-6 py-8">
         <NuqsAdapter>
           <ThemeProvider>
             <RscBoundaryProvider>{children}</RscBoundaryProvider>

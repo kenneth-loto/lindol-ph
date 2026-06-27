@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ReactNode } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,6 +21,7 @@ export function HomePageTabs({
   energyTable,
   incidentFeedTable,
 }: HomePageTabsProps) {
+  const t = useTranslations("Tabs");
   const isMobile = useIsMobile();
   const [tab, setTab] = useQueryState(
     "tab",
@@ -37,10 +39,10 @@ export function HomePageTabs({
       className="flex w-full flex-col gap-6"
     >
       <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="energy-table">Energy Table</TabsTrigger>
+        <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+        <TabsTrigger value="energy-table">{t("energyTable")}</TabsTrigger>
         <TabsTrigger value="incident-feed-table">
-          Incident Feed Table
+          {t("incidentFeed")}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="overview">{overview}</TabsContent>
