@@ -1,7 +1,10 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 import "./env/server";
 import "./env/client";
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -9,7 +12,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   org: "kenzu-org",
   project: "lindol-ph",
   authToken: process.env.SENTRY_AUTH_TOKEN,

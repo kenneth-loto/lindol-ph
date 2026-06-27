@@ -2,6 +2,7 @@
 
 import type { Column } from "@tanstack/react-table";
 import { Check, PlusCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +34,7 @@ export function FacetedFilter<TData, TValue>({
   title,
   options,
 }: FacetedFilterProps<TData, TValue>) {
+  const t = useTranslations("DataTable");
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
@@ -58,7 +60,7 @@ export function FacetedFilter<TData, TValue>({
                       variant="secondary"
                       className="rounded-sm px-1 font-normal"
                     >
-                      {selectedValues.size} selected
+                      {t("selected", { count: selectedValues.size })}
                     </Badge>
                   ) : (
                     options
@@ -83,7 +85,7 @@ export function FacetedFilter<TData, TValue>({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t("noResults")}</CommandEmpty>
             <CommandGroup heading={title}>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
@@ -136,7 +138,7 @@ export function FacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center [&>svg:last-child]:hidden"
                   >
-                    Clear filters
+                    {t("clearFilters")}
                   </CommandItem>
                 </CommandGroup>
               </>

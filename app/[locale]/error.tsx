@@ -2,6 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { RotateCcw, ServerCrash } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,8 @@ interface ErrorProps {
 }
 
 export default function ErrorPage({ error, unstable_retry }: ErrorProps) {
+  const t = useTranslations("ErrorPage");
+
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
@@ -30,21 +33,19 @@ export default function ErrorPage({ error, unstable_retry }: ErrorProps) {
           <ServerCrash />
         </EmptyMedia>
         <EmptyTitle as="h1" className="font-semibold text-lg">
-          Something went wrong
+          {t("title")}
         </EmptyTitle>
-        <EmptyDescription>
-          An unexpected error occurred. Try again, <br /> it might be temporary.
-        </EmptyDescription>
+        <EmptyDescription>{t("description")}</EmptyDescription>
         {error.digest && (
           <p className="font-mono text-muted-foreground text-xs">
-            Error ID: {error.digest}
+            {t("errorId", { digest: error.digest })}
           </p>
         )}
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={() => unstable_retry()}>
           <RotateCcw aria-hidden="true" />
-          Try again
+          {t("retry")}
         </Button>
       </EmptyContent>
     </Empty>

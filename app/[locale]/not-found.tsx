@@ -1,5 +1,8 @@
-import { ArrowLeftIcon, FileQuestionMark } from "lucide-react";
+// "use client";
+
+import { ArrowLeftIcon, FileQuestionMarkIcon } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
@@ -11,23 +14,23 @@ import {
 } from "@/components/ui/empty";
 
 export default function NotFound() {
+  const t = useTranslations("NotFound");
+
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <FileQuestionMark />
+          <FileQuestionMarkIcon />
         </EmptyMedia>
         <EmptyTitle as="h1" className="font-semibold text-lg">
-          404 - Page Not Found
+          {t("title")}
         </EmptyTitle>
-        <EmptyDescription>
-          The page you're looking for doesn't exist <br /> or has been moved.
-        </EmptyDescription>
+        <EmptyDescription>{t("description")}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Link href="/" className={buttonVariants()}>
           <ArrowLeftIcon aria-hidden="true" />
-          Back to home
+          {t("backHome")}
         </Link>
       </EmptyContent>
     </Empty>

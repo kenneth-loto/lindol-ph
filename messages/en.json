@@ -1,0 +1,101 @@
+{
+  "HomePage": {
+    "title": "Lindol PH",
+    "subtitle": "Philippine seismic activity — past 7 days",
+    "loading": "Gathering seismic analytics..."
+  },
+  "Tabs": {
+    "overview": "Overview",
+    "energyTable": "Energy Table",
+    "incidentFeed": "Incident Feed"
+  },
+  "Overview": {
+    "totalIncidents": "Total PH Incidents",
+    "vsLastWeek": "vs last week",
+    "peakMagnitude": "Peak Magnitude",
+    "highestEnergyRegion": "Highest Energy Region",
+    "mostActiveRegions": "Most Active Regions",
+    "mostActiveDesc": "Top 5 by quake count, past 7 days",
+    "severityDistribution": "Severity Distribution",
+    "severityDesc": "By magnitude tier, past 7 days",
+    "lastUpdated": "Last updated",
+    "noData": "No data available"
+  },
+  "EnergyTable": {
+    "title": "Energy Release by Region",
+    "description": "Ranked by estimated total seismic energy released",
+    "formula": "Formula: E = 10^(1.5M + 4.8) joules &middot; Gutenberg & Richter (1956). Values are estimates for analytical purposes only.",
+    "columns": {
+      "region": "Region",
+      "earthquakes": "Quakes",
+      "avgMag": "Avg Mag",
+      "avgDepth": "Avg Depth",
+      "estEnergy": "Est. Energy"
+    }
+  },
+  "IncidentFeed": {
+    "title": "Incident Feed",
+    "description": "All recorded Philippine earthquakes, in the past 7 days",
+    "filterMagnitude": "Magnitude",
+    "filterMinor": "Minor (< 3.0)",
+    "filterLight": "Light (3.0 - 4.9)",
+    "filterStrong": "Strong (5.0+)",
+    "columns": {
+      "magnitude": "Magnitude",
+      "location": "Location",
+      "time": "Time"
+    }
+  },
+  "DataTable": {
+    "search": "Search...",
+    "reset": "Reset",
+    "view": "View",
+    "toggleColumns": "Toggle columns",
+    "resetView": "Reset",
+    "clearFilters": "Clear filters",
+    "noResults": "No results found.",
+    "rowsPerPage": "Rows per page",
+    "page": "Page {current} of {total}",
+    "rowsSelected": "{selected} of {total} row(s) selected.",
+    "goFirstPage": "Go to first page",
+    "goPreviousPage": "Go to previous page",
+    "goNextPage": "Go to next page",
+    "goLastPage": "Go to last page",
+    "selected": "{count} selected"
+  },
+  "Theme": {
+    "toggle": "Toggle theme"
+  },
+  "Locale": {
+    "switch": "Switch language",
+    "en": "English",
+    "fil": "Filipino"
+  },
+  "RelativeTime": {
+    "justNow": "Just now",
+    "minutesAgo": "{count, plural, one {1 minute ago} other {# minutes ago}}",
+    "hoursAgo": "{count, plural, one {1 hour ago} other {# hours ago}}",
+    "daysAgo": "{count, plural, one {1 day ago} other {# days ago}}"
+  },
+  "Charts": {
+    "barLabel": "Earthquakes",
+    "minor": "Minor (<3.0)",
+    "light": "Light (3.0–4.9)",
+    "strong": "Strong (5.0+)"
+  },
+  "Table": {
+    "selectAll": "Select all",
+    "selectRow": "Select row"
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Try again, it might be temporary.",
+    "errorId": "Error ID: {digest}",
+    "retry": "Try again"
+  },
+  "NotFound": {
+    "title": "404 - Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  }
+}
