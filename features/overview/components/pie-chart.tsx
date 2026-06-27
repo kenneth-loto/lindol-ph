@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Pie, PieChart, type PieSectorShapeProps, Sector } from "recharts";
 import {
   type ChartConfig,
@@ -9,12 +10,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartConfig: ChartConfig = {
-  minor: { label: "Minor (<3.0)", color: "var(--chart-3)" },
-  light: { label: "Light (3.0–4.9)", color: "var(--chart-2)" },
-  strong: { label: "Strong (5.0+)", color: "var(--chart-1)" },
-};
 
 interface SeverityDataItem {
   key: string;
@@ -28,6 +23,13 @@ interface Props {
 }
 
 export function SeverityChart({ data }: Props) {
+  const t = useTranslations("Charts");
+  const chartConfig: ChartConfig = {
+    minor: { label: t("minor"), color: "var(--chart-3)" },
+    light: { label: t("light"), color: "var(--chart-2)" },
+    strong: { label: t("strong"), color: "var(--chart-1)" },
+  };
+
   return (
     <ChartContainer config={chartConfig} className="min-h-65 w-full">
       <PieChart>

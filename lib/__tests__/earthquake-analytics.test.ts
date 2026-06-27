@@ -68,6 +68,7 @@ const mockFeatures: USGSFeature[] = [
 describe("Earthquake Analytics Suite", () => {
   test("filterPhilippineQuakes excludes non-PH locations", () => {
     const filtered = filterPhilippineEarthquakes(mockFeatures);
+
     // Davao (2) + Calapan (1) + Mindanao (1) = 4. Tokyo excluded.
     expect(filtered.length).toBe(4);
     expect(filtered.some((quake) => quake.id === "us7000mock5")).toBe(false);
@@ -94,13 +95,17 @@ describe("Earthquake Analytics Suite", () => {
     expect(groups.length).toBe(3); // Davao City, Calapan, Mindanao
 
     const davao = groups.find((g) => g.name === "Davao City");
+
     expect(davao).toBeDefined();
     expect(davao?.count).toBe(2);
+
     // (4.5 + 5.1) / 2 = 4.8
     expect(davao?.avgMag).toBeCloseTo(4.8, 1);
 
     const mindanao = groups.find((g) => g.name === "Mindanao");
+
     expect(mindanao).toBeDefined();
+
     // Only event in this group has mag: null, so validMags was empty
     expect(mindanao?.avgMag).toBeNull();
     expect(mindanao?.count).toBe(1);
@@ -185,14 +190,17 @@ describe("Earthquake Analytics Suite", () => {
 
     // 4 this week vs 10 last week = -60%
     const metrics = getMetrics(philippineEarthquakes, groups, 10);
+
     expect(metrics.vsLastWeek).toBe(-60);
 
     // 4 this week vs 2 last week = +100%
     const up = getMetrics(philippineEarthquakes, groups, 2);
+
     expect(up.vsLastWeek).toBe(100);
 
     // 4 this week vs 4 last week = 0%
     const flat = getMetrics(philippineEarthquakes, groups, 4);
+
     expect(flat.vsLastWeek).toBe(0);
   });
 
@@ -201,9 +209,11 @@ describe("Earthquake Analytics Suite", () => {
     const groups = groupByRegion(philippineEarthquakes);
 
     const omitted = getMetrics(philippineEarthquakes, groups);
+
     expect(omitted.vsLastWeek).toBeNull();
 
     const zero = getMetrics(philippineEarthquakes, groups, 0);
+
     expect(zero.vsLastWeek).toBeNull();
   });
 });

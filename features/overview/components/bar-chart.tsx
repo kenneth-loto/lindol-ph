@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
@@ -8,18 +9,19 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartConfig: ChartConfig = {
-  count: {
-    label: "Earthquakes",
-    color: "var(--chart-1)",
-  },
-};
-
 interface Props {
   data: { name: string; count: number }[];
 }
 
 export function ActiveRegionsChart({ data }: Props) {
+  const t = useTranslations("Charts");
+  const chartConfig: ChartConfig = {
+    count: {
+      label: t("barLabel"),
+      color: "var(--chart-1)",
+    },
+  };
+
   return (
     <ChartContainer config={chartConfig} className="min-h-65 w-full">
       <BarChart

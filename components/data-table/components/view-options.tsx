@@ -2,6 +2,7 @@
 
 import type { Table } from "@tanstack/react-table";
 import { Settings2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function ViewOptions<TData>({ table }: { table: Table<TData> }) {
+  const t = useTranslations("DataTable");
   const hideableColumns = table
     .getAllColumns()
     .filter(
@@ -28,19 +30,15 @@ export function ViewOptions<TData>({ table }: { table: Table<TData> }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto hidden h-8 lg:flex"
-          >
+          <Button variant="outline" size="sm" className="h-8 sm:ml-auto">
             <Settings2 />
-            View
+            {t("view")}
           </Button>
         }
       />
       <DropdownMenuContent align="end" className="w-[150px]">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("toggleColumns")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {hideableColumns.map((column) => (
             <DropdownMenuCheckboxItem
@@ -60,7 +58,7 @@ export function ViewOptions<TData>({ table }: { table: Table<TData> }) {
               className="justify-center text-center"
               onClick={() => table.resetColumnVisibility()}
             >
-              Reset
+              {t("resetView")}
             </DropdownMenuItem>
           </>
         )}

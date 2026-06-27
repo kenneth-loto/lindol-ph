@@ -7,6 +7,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -21,9 +22,13 @@ interface PaginationProps<TData> {
 }
 
 export function Pagination<TData>({ table }: PaginationProps<TData>) {
+  const t = useTranslations("DataTable");
   const pageText = (
     <div className="flex w-[100px] items-center justify-center font-medium text-sm">
-      Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+      {t("page", {
+        current: table.getState().pagination.pageIndex + 1,
+        total: table.getPageCount(),
+      })}
     </div>
   );
 
@@ -38,7 +43,7 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
           onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
         >
-          <span className="sr-only">Go to first page</span>
+          <span className="sr-only">{t("goFirstPage")}</span>
           <ChevronsLeft />
         </Button>
         <Button
@@ -48,7 +53,7 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          <span className="sr-only">Go to previous page</span>
+          <span className="sr-only">{t("goPreviousPage")}</span>
           <ChevronLeft />
         </Button>
         <Button
@@ -58,7 +63,7 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          <span className="sr-only">Go to next page</span>
+          <span className="sr-only">{t("goNextPage")}</span>
           <ChevronRight />
         </Button>
         <Button
@@ -68,14 +73,14 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           disabled={!table.getCanNextPage()}
         >
-          <span className="sr-only">Go to last page</span>
+          <span className="sr-only">{t("goLastPage")}</span>
           <ChevronsRight />
         </Button>
       </div>
 
       <div className="order-2 flex items-center justify-center gap-6 md:order-2 md:gap-8">
         <div className="flex items-center gap-2">
-          <p className="font-medium text-sm">Rows per page</p>
+          <p className="font-medium text-sm">{t("rowsPerPage")}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => table.setPageSize(Number(value))}
@@ -96,8 +101,10 @@ export function Pagination<TData>({ table }: PaginationProps<TData>) {
       </div>
 
       <div className="order-3 flex-1 text-center text-muted-foreground text-sm md:order-1 md:text-left">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {t("rowsSelected", {
+          selected: table.getFilteredSelectedRowModel().rows.length,
+          total: table.getFilteredRowModel().rows.length,
+        })}
       </div>
     </div>
   );

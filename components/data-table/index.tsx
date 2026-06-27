@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { useQueryStates } from "nuqs";
 import { useState } from "react";
 import { Pagination, Toolbar } from "@/components/data-table/components";
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
   error,
   shallow = true,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations("DataTable");
   const [rowSelection, setRowSelection] = useState({});
 
   const [
@@ -139,7 +141,7 @@ export function DataTable<TData, TValue>({
       return (
         <TableRow>
           <TableCell colSpan={columns.length} className="h-24 text-center">
-            No results.
+            {t("noResults")}
           </TableCell>
         </TableRow>
       );

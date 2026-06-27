@@ -1,6 +1,6 @@
 # LindolPH
 
-A minimalist seismic analytics dashboard that surfaces real-time earthquake activity across the Philippines. Pulls live data from the USGS Earthquake Hazards Program, isolates Philippine events, and computes estimated energy released per region using the Gutenberg-Richter energy relation.
+A minimalist seismic analytics dashboard that surfaces real-time earthquake activity across the Philippines, available in **English** and **Filipino**. Pulls live data from the USGS Earthquake Hazards Program, isolates Philippine events, and computes estimated energy released per region using the Gutenberg-Richter energy relation.
 
 ## Live Demo
 
@@ -51,12 +51,13 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
 
 | Layer     | Choice                               | Reason                                 |
 | --------- | ------------------------------------ | -------------------------------------- |
-| Framework | Next.js 16 (App Router) + TypeScript | `connection()` + `"use cache"` pattern |
-| Styling   | Tailwind CSS + shadcn/ui             | Utility-first, accessible components   |
-| Charts    | Recharts                             | Included via shadcn charts, composable |
-| Runtime   | Bun                                  | Faster installs, native TS test runner |
-| Container | Docker (multi-stage build)           | Lean production image                  |
-| Cloud     | Render (existing image from GHCR)    | GitOps pipeline, auto-deploy on push   |
+| Framework      | Next.js 16 (App Router) + TypeScript | `connection()` + `"use cache"` pattern |
+| Styling        | Tailwind CSS + shadcn/ui             | Utility-first, accessible components   |
+| Internationalization | next-intl                       | Sub-path routing (`/en/`, `/fil/`)     |
+| Charts         | Recharts                             | Included via shadcn charts, composable |
+| Runtime        | Bun                                  | Faster installs, native TS test runner |
+| Container      | Docker (multi-stage build)           | Lean production image                  |
+| Cloud          | Render (existing image from GHCR)    | GitOps pipeline, auto-deploy on push   |
 
 ---
 
@@ -81,7 +82,10 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
         │                                  skipping unrated (null-magnitude) events
         │ sortRegionsByEnergy(groups)   → ranks already-aggregated regions descending
         │
-        ▼ app/page.tsx (static shell)
+        ─ proxy.ts
+        │ locale detection → negotiate `en` or `fil` → rewrite to [locale]
+        │
+        ▼ app/[locale]/page.tsx
             │ <Suspense>
             │
             ▼ features/home-page/index.tsx
@@ -92,9 +96,13 @@ Scrollable log of every Philippine earthquake in the dataset. Filterable by magn
               └── features/incident-feed-table/   → searchable, filterable log
 ```
 
+### Internationalization
+
+The app supports **English** (`/en/`) and **Filipino** (`/fil/`) via [next-intl](https://next-intl.dev). Locale is negotiated by `proxy.ts` based on the request headers, cookie, or URL prefix. A dropdown locale switcher in the header lets users switch between languages at any time. Translation strings live in `messages/{en,fil}.json`.
+
 ### Build-time vs Request-time
 
-The page shell (heading, theme toggle, suspense fallback) is statically prerendered. The `HomePageContent` component calls `connection()` from `next/server` to defer data fetching to request time, preventing stale USGS data from being baked into the Docker image. At runtime, `"use cache"` in the DAL layer caches the response for 1 hour across requests.
+The page shell (heading, theme toggle, locale switcher, suspense fallback) is statically prerendered. The `HomePageContent` component calls `connection()` from `next/server` to defer data fetching to request time, preventing stale USGS data from being baked into the Docker image. At runtime, `"use cache"` in the DAL layer caches the response for 1 hour across requests.
 
 > **Note on energy calculation:** total energy per region is summed from individual quake magnitudes, not derived from the region's average magnitude. Because the magnitude→energy relationship is exponential, converting an averaged magnitude back to energy can understate the true total by orders of magnitude whenever quake sizes vary within a region — e.g. one M7.0 alongside several smaller quakes.
 
@@ -108,18 +116,29 @@ lindolph/
 │   ├── ci.yml                      # Lint → typecheck → test → image → deploy
 │   ├── codeql.yml                  # Security analysis
 │   └── auto-target-develop.yml     # PR routing
+├── i18n/
+│   ├── routing.ts                  # Locale config (en, fil)
+│   ├── navigation.ts               # Typed navigation helpers
+│   └── request.ts                  # Request-scoped config (messages, locale)
+├── messages/
+│   ├── en.json                     # English UI strings
+│   └── fil.json                    # Filipino UI strings
 ├── app/
-│   ├── dal/
-│   │   └── earthquakes.ts          # USGS fetch + "use cache" with 1hr TTL
-│   ├── layout.tsx
-│   ├── page.tsx                    # Static shell → Suspense → HomePageContent
-│   ├── error.tsx                   # Sentry-captured error boundary
+│   ├── [locale]/
+│   │   ├── layout.tsx              # Locale-scoped layout (NextIntlClientProvider)
+│   │   ├── page.tsx                # Static shell → Suspense → HomePageContent
+│   │   ├── not-found.tsx           # Localized 404 page
+│   │   ├── error.tsx               # Sentry-captured error boundary
+│   │   └── [...rest]/
+│   │       └── page.tsx            # Catch-all that triggers locale 404
+│   ├── layout.tsx                  # Root layout (html/body, ThemeProvider, NuqsAdapter)
+│   ├── page.tsx                    # Root redirect to default locale
 │   ├── global-error.tsx            # Root error boundary
-│   ├── not-found.tsx               # 404 page
 │   └── globals.css
 ├── components/
 │   ├── data-table/                 # Reusable data table primitives
 │   ├── ui/                         # shadcn/ui primitives
+│   ├── locale-switcher.tsx         # Language toggle dropdown
 │   ├── theme-provider.tsx
 │   └── mode-toggle.tsx
 ├── features/
@@ -141,7 +160,9 @@ lindolph/
 │   ├── schema/
 │   │   └── usgs-feature.ts         # Valibot schema for USGS response
 │   └── __tests__/
-│       └── earthquake-analytics.test.ts
+│       ├── earthquake-analytics.test.ts
+│       ├── earthquakes.test.ts
+│       └── energy-calculation.test.ts
 ├── types/
 │   ├── earthquakes.ts              # TypeScript interfaces for USGS GeoJSON
 │   └── data-table.ts               # Table type definitions
@@ -149,6 +170,7 @@ lindolph/
 │   ├── server.ts                   # T3 env: server-side validation
 │   ├── client.ts                   # T3 env: client-side validation
 │   └── index.ts                    # Barrel exports
+├── proxy.ts                        # Locale detection + redirect (Next.js 16 middleware)
 ├── public/
 │   └── images/
 │       └── lindol-ph-preview.webp
